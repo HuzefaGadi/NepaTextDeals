@@ -1,0 +1,58 @@
+<resources>
+
+    <string name="app_name">NEPA TextDeals</string>
+    <string name="getstarted"><b>Touch Here To Get Started</b></string>
+    <string name="welcome">Check In Below Each Time You Make A Purchase. You Will Earn FREE Rewards Just For Being Our Loyal Customer.</string>
+    <string name="welcome1">5 Check-In\'s Earns A FREE</string>
+    <string name="welcome2"><b>LARGE 3 TOPPING PIZZA</b></string>
+    <string name="check"><b>Check In</b></string>
+    <string name="redeem"><b>Redeem Coupon</b></string>
+    <string name="messagecheck"><b>Enter Your Mobile Number To Check In</b></string>
+    <string name="edit_message">Enter Your Number</string>
+    <string name="button_send"><b>Enter</b></string>
+    <string name="phone_hint"></string>
+    <string name="edit_messageredeem">Enter Coupon Code</string>
+    <string name="messageredeem"><b>Enter Your Code To Redeem Coupon</b></string>
+    <string name="button_enter"><b>Enter</b></string>
+    <string name="messagesuccessredeem"><b>Coupon Redemption</b></string>
+    <string name="messagesuccessredeem1">You Have Just Redeemed A Coupon Code Which Is Good For The Following:</string>
+    <string name="messagesuccessredeem2"><b>BUY 1 BUFFET &amp; GET 1 FREE</b></string>
+    <string name="messagesuccessredeem3">Show This Screen To The Cashier. Thank You For Being Our Loyal Customer.</string>
+    <string name="messagesuccesscheckin"><b>Congratulations!</b></string>
+    <string name="button_return"><b>Return To Main Screen</b></string>
+    <string name="messagesuccesscheckin1">You Have Checked-In 10 Times And Earned Your Reward For Being Our Loyal Customer.</string>
+    <string name="messagesuccesscheckin2">A Coupon Code Has Been Sent To Your Mobile Phone. Enter That Under The "Redeem Coupon" Button On The Main Screen When You Wish To Redeem Your FREE Reward.</string>
+    <string name="messagetimecheckin"><b>You Have Already Checked-In.</b></string>
+    <string name="messagetimecheckin1">You Can Only Check-In Once Per 24 Hour Period. </string>
+    <string name="messagenumbercheckin"><b>Thank You For Your Purchase!</b></string>
+    <string name="messagenumbercheckin1">You Have Checked In 3 Times. You Have 7 More Check In\'s Before You Earn Your FREE Reward.</string>
+    <string name="messagenumbercheckin11">10 Check In\'s Earns a FREE</string>
+    <string name="messagenumbercheckin2"><b>LARGE 3 TOPPING PIZZA</b></string>
+    <string name="messageincorrectredeem"><b>Invalid Reward Code</b></string>
+    <string name="messageincorrectredeem1">You Have Entered An Invalid Reward Code. Please Check Your Code And Try Again.</string>
+    <string name="footer">By Signing Up You Agree To Receive Up To 6 Messages Per Month Sent To Your Mobile Phone. Message &amp; Data Rates May Apply. Reply STOP To Stop.</string>
+    <string name="newusercheckin"><b>You Must Create A FREE Account</b></string>
+    <string name="newusercheckin1">You Must Create A FREE NEPATextDeals Account In Order To Participate. Creating An Account Takes Only Few Seconds. Please Check Your Mobile Phone Now And Follow The Instructions.</string>
+    <string name="b1"><b>1</b></string>
+    <string name="b2"><b>2</b></string>
+    <string name="b3"><b>3</b></string>
+    <string name="b4"><b>4</b></string>
+    <string name="b5"><b>5</b></string>
+    <string name="b6"><b>6</b></string>
+    <string name="b7"><b>7</b></string>
+    <string name="b8"><b>8</b></string>
+    <string name="b9"><b>9</b></string>
+    <string name="b0"><b>0</b></string>
+    <string name="clear"><b>Clear</b></string>
+    <string name="back"><b>Back</b></string>
+    <string name="start"><b>Join Our Rewards Program</b></string>
+    <string name="start1">Receive Money Saving Coupons Sent Directly To Your Mobile Phone For Being Our Loyal Customer!</string>
+    <string name="start2"><b>It\'s Fast &amp; It\'s FREE!</b></string>
+    <string name="start3">It Takes Less Than 20 Seconds To Sign Up.</string>
+    <string name="banner_alt">icon</string>
+    <string name="banner_alt1">logo</string>
+    <string name="Enterurl">Enter Url</string>
+    
+    
+
+</resources>

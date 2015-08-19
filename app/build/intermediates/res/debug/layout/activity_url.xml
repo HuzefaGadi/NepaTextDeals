@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backimage"
+    tools:context=".UrlActivity"
+    android:id="@+id/layout_url" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ProgressBar1"
+        android:padding="20dp"
+        android:layout_alignParentLeft="true"
+        android:gravity="center"
+        android:weightSum="7">
+
+        <EditText
+            android:id="@+id/edit_messageurl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="@drawable/btn"
+            android:cursorVisible="false"
+            android:ems="11"
+            android:hint="@string/Enterurl"
+            android:imeOptions="actionSend"
+            android:inputType="textNoSuggestions"
+            android:paddingLeft="27dp"
+            android:paddingRight="27dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#FFFFFF"
+            android:layout_weight="6"
+            android:textSize="30sp" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/buttonurl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custombuttonenter"
+            android:shadowColor="#000"
+            android:shadowDx="-2"
+            android:shadowDy="4"
+            android:shadowRadius="7"
+            android:text="@string/button_enter"
+            android:textColor="#ffffff"
+            android:textSize="32sp"
+            android:layout_weight="1"/>
+    </TableRow>
+
+    <Button
+        android:id="@+id/buttonreturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/custombutton"
+        android:paddingBottom="12dp"
+        android:paddingRight="6dp"
+        android:shadowColor="#000"
+        android:shadowDx="-2"
+        android:shadowDy="4"
+        android:shadowRadius="7"
+        android:text="@string/button_return"
+        android:textColor="#ffffff"
+        android:textSize="30sp" />
+
+    <ProgressBar
+        android:id="@+id/ProgressBar1"
+        android:layout_width="wrap_content"
+        android:layout_height="90dp"
+        android:layout_above="@+id/buttonreturn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="1dp" />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewForExit"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout><!-- From: file:/C:/Users/huzefaasger/Downloads/NepaTextDeals1/app/src/main/res/layout/activity_url.xml -->

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_pressed="true" android:drawable="@drawable/number_pressed"/> <!-- pressed -->
+    <item android:state_focused="true" android:drawable="@drawable/number_focused"/> <!-- focused -->
+    <item android:drawable="@drawable/number_enabled"/> <!-- default -->
+
+</selector>
+
+
+<!-- From: file:/C:/Users/huzefaasger/Downloads/NepaTextDeals1/app/src/main/res/drawable-ldpi/custombutton2.xml -->
