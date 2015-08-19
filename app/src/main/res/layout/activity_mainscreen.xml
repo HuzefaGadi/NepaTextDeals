@@ -59,6 +59,7 @@
         android:background="@drawable/custombutton"
         android:paddingBottom="12dp"
         android:paddingRight="6dp"
+
         android:text="@string/check"
         android:layout_marginTop="62dp"
         android:textColor="#ffffff"
@@ -143,5 +144,17 @@
           android:layout_alignBottom="@+id/imageView2"
           android:layout_centerHorizontal="true"
           android:layout_marginBottom="31dp" />
+
+    <EditText
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:id="@+id/textToProceed"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
+
+        <requestFocus/>
+        </EditText>
 
 </RelativeLayout>

@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,7 +22,9 @@ import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,21 +38,46 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 	TextView welcome1, welcome2, footer;
 	String imagelogo;
 	private ProgressBar ProgressBar1;
+	EditText textToProceed;
+	boolean allowed = false;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_mainscreen);
 		addListenerOnButton();
 		senceTouch = findViewById(R.id.layout_mainscreen); 
 	    senceTouch.setOnTouchListener(this);
 	    timerCount = new MyCount(20 * 1000, 1000);
 	    timerCount.start();
-	    
+
+
+		textToProceed = (EditText)findViewById(R.id.textToProceed);
+		EditText.OnEditorActionListener exampleListener = new TextView.OnEditorActionListener() {
+
+			public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_NULL
+						&& event.getAction() == KeyEvent.ACTION_DOWN) {
+
+					System.out.print("CLICKED");
+					allowed = true;
+					//match this behavior to your 'Send' (or Confirm) button
+					new Handler().postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							allowed = false;
+						}
+					},10000);
+				}
+				return true;
+			}
+		};
+
 		
-		
+
+		textToProceed.setOnEditorActionListener(exampleListener);
 		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
 		String free_gift1 = pref.getString("free_gift", null);
 		String no_of_checkin1 = pref.getString("no_of_checkin", null);
@@ -135,7 +163,12 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 		}
 	}
 
-	
+	@Override
+	public void onResume() {
+		super.onResume();
+		textToProceed.requestFocus();
+	}
+
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 	        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
@@ -174,11 +207,19 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     			 
     			            @Override
     			            public void onClick(View view) {
-    			 
-    			            	Intent i = new Intent(MainScreenActivity.this, CheckinActivity.class);
-    			            	startActivity(i);
-    			            	MainScreenActivity.this.finish();
-    			            	timerCount.cancel();
+
+								if(allowed)
+								{
+									Intent i = new Intent(MainScreenActivity.this, CheckinActivity.class);
+									startActivity(i);
+									MainScreenActivity.this.finish();
+									timerCount.cancel();
+								}
+								else
+								{
+									textToProceed.requestFocus();
+								}
+
     		            }
     		 
     			    });
