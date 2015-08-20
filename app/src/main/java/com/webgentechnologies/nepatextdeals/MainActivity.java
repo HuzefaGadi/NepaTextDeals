@@ -136,7 +136,72 @@ public class MainActivity extends ApplicationActivity {
         String validurl1 = pref2.getString("validurl", null);
         validurl2 = validurl1;
         //Toast.makeText(MainActivity.this, validurl2, Toast.LENGTH_LONG).show();
+        if(validurl2!=null)
+        {
+            {
 
+                isInternetPresent = cd.isConnectingToInternet();
+
+                if (isInternetPresent) {
+
+                    try {
+                        HttpClient httpclient = new DefaultHttpClient();
+                        String httppostURL = "http://nepatextdeals.com/nepa/androidweb";
+                        //String httppostURL = "http://192.168.0.254/nepadeals/androidweb";
+                        //String httppostURL = "http://50.62.31.191/nepadeals/androidweb";
+                        HttpPost httppost = new HttpPost(httppostURL);
+                        Log.v(TAG, "postURL: " + httppost);
+
+                        JSONObject data1 = new JSONObject();
+                        data1.put("merchant_kiosk_url", validurl2);
+
+                        JSONArray jsonArray = new JSONArray();
+                        jsonArray.put(data1);
+
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        nvps.add(new BasicNameValuePair("data", data1.toString()));
+                        httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+
+
+                        httppost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+                        HttpResponse response = httpclient.execute(httppost);
+                        HttpEntity resEntity = response.getEntity();
+                        if (resEntity != null) {
+                            String responseStr = EntityUtils.toString(resEntity).trim();
+                            Log.v(TAG, "Response: " + responseStr);
+                            Log.i("TAG", "" + response.getStatusLine().getStatusCode());
+                            //Toast.makeText(MainActivity.this,  responseStr, Toast.LENGTH_LONG).show();
+                            {
+                                try {
+                                    JSONObject mainObject = new JSONObject(responseStr);
+
+                                    String kiosk_mode = mainObject.getString("kiosk_mode");
+                                    Editor editor = pref.edit();
+
+                                    editor.putString("kiosk_mode", kiosk_mode);
+                                    editor.apply();
+
+
+
+                                } catch (JSONException e) {
+                                    Log.e("JSON Parser", "Error parsing data " + e.toString());
+                                }
+                            }
+                        }
+                    } catch (ClientProtocolException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Request failed: " + e.toString(),
+                                Toast.LENGTH_LONG).show();
+                    } catch (Throwable t) {
+                        Toast.makeText(MainActivity.this, "Request failed: " + t.toString(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }
         String fontPath = "fonts/helvetica67medium.ttf";
         TextView txt = (TextView) findViewById(R.id.start);
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
@@ -295,13 +360,18 @@ public class MainActivity extends ApplicationActivity {
                                                                       String free_gift = mainObject.getString("free_gift");
                                                                       String disclaimer_message = mainObject.getString("disclaimer_message");
                                                                       String business_logo = mainObject.getString("business_logo");
-
+                                                                      String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
+                                                                      String kiosk_mode = mainObject.getString("kiosk_mode");
                                                                       SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
                                                                       Editor editor = pref.edit();
                                                                       editor.putString("no_of_checkin", no_of_checkin);
                                                                       editor.putString("free_gift", free_gift);
                                                                       editor.putString("disclaimer_message", disclaimer_message);
                                                                       editor.putString("business_logo", business_logo);
+                                                                      editor.putString("button_push_for_checkins", button_push_for_checkins);
+                                                                      editor.putString("kiosk_mode", kiosk_mode);
+
+
                                                                       editor.apply();
 
                                                                       Intent i = new Intent(MainActivity.this, MainScreenActivity.class);

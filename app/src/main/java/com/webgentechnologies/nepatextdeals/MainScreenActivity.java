@@ -8,13 +8,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,8 +29,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainScreenActivity extends ApplicationActivity implements OnTouchListener {
 	
@@ -40,7 +45,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 	private ProgressBar ProgressBar1;
 	EditText textToProceed;
 	boolean allowed = false;
-
+ 	int push_button=0;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -50,16 +55,30 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 		addListenerOnButton();
 		senceTouch = findViewById(R.id.layout_mainscreen); 
 	    senceTouch.setOnTouchListener(this);
-	    timerCount = new MyCount(20 * 1000, 1000);
-	    timerCount.start();
+
+
+		
+
+
+		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+		String free_gift1 = pref.getString("free_gift", null);
+		String no_of_checkin1 = pref.getString("no_of_checkin", null);
+		String disclaimer_message1 = pref.getString("disclaimer_message", null);
+		String business_logo1 = pref.getString("business_logo", null);
+		push_button = Integer.parseInt(pref.getString("button_push_for_checkins","0"));
+		imagelogo = business_logo1;
+
+		timerCount = new MyCount(20 * 1000, 1000);
+		timerCount.start();
 
 
 		textToProceed = (EditText)findViewById(R.id.textToProceed);
+		textToProceed.setInputType(InputType.TYPE_NULL);
 		EditText.OnEditorActionListener exampleListener = new TextView.OnEditorActionListener() {
 
 			public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_NULL
-						&& event.getAction() == KeyEvent.ACTION_DOWN) {
+						&& event.getAction() == KeyEvent.ACTION_DOWN && push_button == 1) {
 
 					System.out.print("CLICKED");
 					allowed = true;
@@ -74,18 +93,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 				return true;
 			}
 		};
-
-		
-
 		textToProceed.setOnEditorActionListener(exampleListener);
-		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String free_gift1 = pref.getString("free_gift", null);
-		String no_of_checkin1 = pref.getString("no_of_checkin", null);
-		String disclaimer_message1 = pref.getString("disclaimer_message", null);
-		String business_logo1 = pref.getString("business_logo", null);
-		
-		imagelogo = business_logo1;
-		
 		if(imagelogo == null){
 			
 		//imageView2 = (ImageView) findViewById(R.id.imageView2);
@@ -207,6 +215,10 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     			 
     			            @Override
     			            public void onClick(View view) {
+								if(push_button == 0)
+								{
+									allowed=true;
+								}
 
 								if(allowed)
 								{
@@ -217,6 +229,14 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 								}
 								else
 								{
+									Toast toast = Toast.makeText(MainScreenActivity.this,"Authorization Required, See Attendant", Toast.LENGTH_LONG);
+									toast.setGravity(Gravity.CENTER, 0, 0);
+									LinearLayout toastLayout = (LinearLayout) toast.getView();
+									TextView toastTV = (TextView) toastLayout.getChildAt(0);
+									toastTV.setTextSize(45);
+									toastTV.setTextColor(Color.WHITE);
+									toast.getView().setBackgroundResource(R.drawable.customtoast);
+									toast.show();
 									textToProceed.requestFocus();
 								}
 

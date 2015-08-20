@@ -67,7 +67,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 	MyCount timerCount;
 	private ProgressBar ProgressBar1;
 	SoundPoolPlayer sound;
-	
+	SharedPreferences pref ;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+
 	private static final String TAG = "CheckinActivity.java";
 	
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 		StrictMode.enableDefaults();
 		senceTouch = findViewById(R.id.layout_checkin); 
 	    senceTouch.setOnTouchListener(this);
+		pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
 	    timerCount = new MyCount(20 * 1000, 1000);
 	    timerCount.start();
 
