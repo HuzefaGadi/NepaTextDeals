@@ -1,6 +1,7 @@
 package com.webgentechnologies.nepatextdeals;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.StrictMode;
@@ -40,6 +44,7 @@ import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -242,6 +247,8 @@ public class UrlActivity extends Activity implements OnTouchListener {
 											toastTV.setTextColor(Color.WHITE);
 											toast.getView().setBackgroundResource(R.drawable.customtoast);
 											toast.show();
+
+											new DownloadImageTask2().execute(business_logo);
 										}
 									} else if (url.equals("invalid")) {
 										ProgressBar1.setVisibility(View.GONE);
@@ -340,5 +347,35 @@ public class UrlActivity extends Activity implements OnTouchListener {
 		timerCount.cancel();
 		//timerCount.start();
 		return false;
+	}
+
+	class DownloadImageTask2 extends AsyncTask<String, Void, Bitmap> {
+
+		public DownloadImageTask2() {
+
+		}
+
+		protected Bitmap doInBackground(String... urls) {
+
+
+			String urldisplay = urls[0];
+			Bitmap mIcon11 = null;
+			try {
+				InputStream in = new java.net.URL(urldisplay).openStream();
+				mIcon11 = BitmapFactory.decodeStream(in);
+			} catch (Exception e) {
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+			}
+
+			return mIcon11;
+
+
+		}
+
+		protected void onPostExecute(Bitmap result) {
+
+			GlobalClass.logo = result;
+		}
 	}
 }

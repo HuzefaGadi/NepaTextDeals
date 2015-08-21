@@ -27,7 +27,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class SuccessRedeemActivity extends ApplicationActivity {
+public class SuccessRedeemActivity extends Activity {
 	
 	private Button Buttonreturn; 
 	TextView messagesuccessredeem2, footer;
@@ -45,6 +45,7 @@ public class SuccessRedeemActivity extends ApplicationActivity {
 		
 		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
 		String free_gift1 = pref.getString("free_gift", null);
+		String coupon_code_description = pref.getString("coupon_code_description", null);
         String disclaimer_message1 = pref.getString("disclaimer_message", null);
         String business_logo1 = pref.getString("business_logo", null);
         
@@ -67,7 +68,7 @@ public class SuccessRedeemActivity extends ApplicationActivity {
 		
 		
 		messagesuccessredeem2 = (TextView) findViewById(R.id.messagesuccessredeem2);
-		messagesuccessredeem2.setText(free_gift1);
+		messagesuccessredeem2.setText(coupon_code_description);
 		messagesuccessredeem2.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 		messagesuccessredeem2.setTypeface(null, Typeface.BOLD);
 		
