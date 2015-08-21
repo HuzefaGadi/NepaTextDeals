@@ -234,10 +234,12 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 					LinearLayout toastLayout = (LinearLayout) toast.getView();
 					TextView toastTV = (TextView) toastLayout.getChildAt(0);
 					toastTV.setTextSize(45);
+					toastTV.setGravity(Gravity.CENTER);
 					toastTV.setTextColor(Color.WHITE);
 					toast.getView().setBackgroundResource(R.drawable.customtoast);
 					toast.show();
 					textToProceed.requestFocus();
+
 				}
 
 			}

@@ -68,7 +68,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 	private ProgressBar ProgressBar1;
 	SoundPoolPlayer sound;
 	SharedPreferences pref ;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-
+boolean kioskMode=false;
 	private static final String TAG = "CheckinActivity.java";
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +112,15 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 			new DownloadImageTask1((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
 		}
-
+		String kioskModeString = pref.getString("kiosk_mode","2");
+		if(kioskModeString.equals("2"))
+		{
+			kioskMode = false;
+		}
+		else
+		{
+			kioskMode = true;
+		}
 		footer = (TextView) findViewById(R.id.footer);
 		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
 
@@ -120,6 +128,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 		TextView txt = (TextView) findViewById(R.id.messagecheck);
 		Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
 		txt.setTypeface(tf);
+		txt.setText(kioskMode?R.string.messagecheck:R.string.messagecheckForSignUp);
+
 
 		TextView footer = (TextView) findViewById(R.id.footer);
 		Typeface.createFromAsset(getAssets(), fontPath);
@@ -284,204 +294,204 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
 					try {
 
-						String checkin = edit_message.getText().toString();
+						if (kioskMode) {
+							String checkin = edit_message.getText().toString();
 
-						HttpClient httpclient = new DefaultHttpClient();
-						String httppostURL = "http://nepatextdeals.com/nepa/androidweb/checkin";
-						//String httppostURL = "http://192.168.0.254/nepadeals/androidweb/checkin";
-						HttpPost httppost = new HttpPost(httppostURL);
-						Log.v(TAG, "postURL: " + httppost);
+							HttpClient httpclient = new DefaultHttpClient();
+							String httppostURL = "http://nepatextdeals.com/nepa/androidweb/checkin";
+							//String httppostURL = "http://192.168.0.254/nepadeals/androidweb/checkin";
+							HttpPost httppost = new HttpPost(httppostURL);
+							Log.v(TAG, "postURL: " + httppost);
 
-						JSONObject data1 = new JSONObject();
-						data1.put("merchant_id", merchant_id2);
-						data1.put("merchant_location_id", merchant_location_id2);
-						data1.put("business_user_id", user_id2);
-						data1.put("merchant_kiosk_id", merchant_kiosk_id2);
-						data1.put("subscriber_phone", checkin);
+							JSONObject data1 = new JSONObject();
+							data1.put("merchant_id", merchant_id2);
+							data1.put("merchant_location_id", merchant_location_id2);
+							data1.put("business_user_id", user_id2);
+							data1.put("merchant_kiosk_id", merchant_kiosk_id2);
+							data1.put("subscriber_phone", checkin);
 
-						JSONArray jsonArray = new JSONArray();
-						jsonArray.put(data1);
+							JSONArray jsonArray = new JSONArray();
+							jsonArray.put(data1);
 
-						List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-						nvps.add(new BasicNameValuePair("data", data1.toString()));
-						httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+							List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+							nvps.add(new BasicNameValuePair("data", data1.toString()));
+							httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 
-						httppost.setHeader(HTTP.CONTENT_TYPE,"application/x-www-form-urlencoded;charset=UTF-8");
-						HttpResponse response = httpclient.execute(httppost);
-						HttpEntity resEntity = response.getEntity();
-						if (resEntity != null) {
-							String responseStr = EntityUtils.toString(resEntity).trim();
-							Log.v(TAG, "Response: " +  responseStr);
-							Log.i("TAG",""+response.getStatusLine().getStatusCode());
-							//Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
-							//you can add an if statement here and do other actions based on the response
-							{
-								JSONObject mainObject = new JSONObject(responseStr);
-								String record = mainObject.getString("record");
-								if(record.equals("No")) {
-									String reason = mainObject.getString("reason");
-									if(reason.equals("1")) {
-										Toast toast = Toast.makeText(CheckinActivity.this,"Invalid Phone Number", Toast.LENGTH_LONG);
-										toast.setGravity(Gravity.CENTER, 0, 0);
-										LinearLayout toastLayout = (LinearLayout) toast.getView();
-										TextView toastTV = (TextView) toastLayout.getChildAt(0);
-										toastTV.setTextSize(45);
-										toastTV.setTextColor(Color.WHITE);
-										toast.getView().setBackgroundResource(R.drawable.customtoast);
-										toast.show();
-									}else if(reason.equals("2")) {
-										Toast toast = Toast.makeText(CheckinActivity.this,"Your Number Is Blacklisted/Inactive", Toast.LENGTH_LONG);
+							httppost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+							HttpResponse response = httpclient.execute(httppost);
+							HttpEntity resEntity = response.getEntity();
+							if (resEntity != null) {
+								String responseStr = EntityUtils.toString(resEntity).trim();
+								Log.v(TAG, "Response: " + responseStr);
+								Log.i("TAG", "" + response.getStatusLine().getStatusCode());
+								//Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
+								//you can add an if statement here and do other actions based on the response
+								{
+									JSONObject mainObject = new JSONObject(responseStr);
+									String record = mainObject.getString("record");
+									if (record.equals("No")) {
+										String reason = mainObject.getString("reason");
+										if (reason.equals("1")) {
+											Toast toast = Toast.makeText(CheckinActivity.this, "Invalid Phone Number", Toast.LENGTH_LONG);
+											toast.setGravity(Gravity.CENTER, 0, 0);
+											LinearLayout toastLayout = (LinearLayout) toast.getView();
+											TextView toastTV = (TextView) toastLayout.getChildAt(0);
+											toastTV.setTextSize(45);
+											toastTV.setTextColor(Color.WHITE);
+											toast.getView().setBackgroundResource(R.drawable.customtoast);
+											toast.show();
+										} else if (reason.equals("2")) {
+											Toast toast = Toast.makeText(CheckinActivity.this, "Your Number Is Blacklisted/Inactive", Toast.LENGTH_LONG);
 
-										LinearLayout layout = (LinearLayout) toast.getView();
-										if (layout.getChildCount() > 0) {
-											TextView tv = (TextView) layout.getChildAt(0);
-											tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-										}
+											LinearLayout layout = (LinearLayout) toast.getView();
+											if (layout.getChildCount() > 0) {
+												TextView tv = (TextView) layout.getChildAt(0);
+												tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+											}
 
-										toast.setGravity(Gravity.CENTER, 0, 0);
-										LinearLayout toastLayout = (LinearLayout) toast.getView();
-										TextView toastTV = (TextView) toastLayout.getChildAt(0);
-										toastTV.setTextSize(45);
-										toastTV.setTextColor(Color.WHITE);
-										toast.getView().setBackgroundResource(R.drawable.customtoast);
-										toast.show();
-									}else if(reason.equals("0")) {
-										Toast toast = Toast.makeText(CheckinActivity.this,"Kiosk Is Not Active", Toast.LENGTH_LONG);
-										toast.setGravity(Gravity.CENTER, 0, 0);
-										LinearLayout toastLayout = (LinearLayout) toast.getView();
-										TextView toastTV = (TextView) toastLayout.getChildAt(0);
-										toastTV.setTextSize(45);
-										toastTV.setTextColor(Color.WHITE);
-										toast.getView().setBackgroundResource(R.drawable.customtoast);
-										toast.show();
-									}else if(reason.equals("3")) {
-										String age_limit = mainObject.getString("age_limit");
-										age = age_limit;
+											toast.setGravity(Gravity.CENTER, 0, 0);
+											LinearLayout toastLayout = (LinearLayout) toast.getView();
+											TextView toastTV = (TextView) toastLayout.getChildAt(0);
+											toastTV.setTextSize(45);
+											toastTV.setTextColor(Color.WHITE);
+											toast.getView().setBackgroundResource(R.drawable.customtoast);
+											toast.show();
+										} else if (reason.equals("0")) {
+											Toast toast = Toast.makeText(CheckinActivity.this, "Kiosk Is Not Active", Toast.LENGTH_LONG);
+											toast.setGravity(Gravity.CENTER, 0, 0);
+											LinearLayout toastLayout = (LinearLayout) toast.getView();
+											TextView toastTV = (TextView) toastLayout.getChildAt(0);
+											toastTV.setTextSize(45);
+											toastTV.setTextColor(Color.WHITE);
+											toast.getView().setBackgroundResource(R.drawable.customtoast);
+											toast.show();
+										} else if (reason.equals("3")) {
+											String age_limit = mainObject.getString("age_limit");
+											age = age_limit;
 
-										AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
-										alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " +age_limit +" Years Old. Do You Meet The Age Requirement?");
-										alertDialogBuilder.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog,int id) {
+											AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
+											alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " + age_limit + " Years Old. Do You Meet The Age Requirement?");
+											alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+												public void onClick(DialogInterface dialog, int id) {
 
-												try {
+													try {
 
 
+														HttpClient httpclient5 = new DefaultHttpClient();
+														String httppostURL5 = "http://nepatextdeals.com/nepa/androidweb/checkinage";
+														//String httppostURL5 = "http://192.168.0.254/nepadeals/androidweb/checkinage";
+														HttpPost httppost5 = new HttpPost(httppostURL5);
+														Log.v(TAG, "postURL: " + httppost5);
 
-													HttpClient httpclient5 = new DefaultHttpClient();
-													String httppostURL5 = "http://nepatextdeals.com/nepa/androidweb/checkinage";
-													//String httppostURL5 = "http://192.168.0.254/nepadeals/androidweb/checkinage";
-													HttpPost httppost5 = new HttpPost(httppostURL5);
-													Log.v(TAG, "postURL: " + httppost5);
+														JSONObject data5 = new JSONObject();
+														data5.put("merchant_id", merchant_id2);
+														data5.put("merchant_location_id", merchant_location_id2);
+														data5.put("business_user_id", user_id2);
+														data5.put("merchant_kiosk_id", merchant_kiosk_id2);
+														data5.put("subscriber_phone", phonenumber);
+														data5.put("age_limit", age);
 
-													JSONObject data5 = new JSONObject();
-													data5.put("merchant_id", merchant_id2);
-													data5.put("merchant_location_id", merchant_location_id2);
-													data5.put("business_user_id", user_id2);
-													data5.put("merchant_kiosk_id", merchant_kiosk_id2);
-													data5.put("subscriber_phone", phonenumber);
-													data5.put("age_limit", age);
+														JSONArray jsonArray5 = new JSONArray();
+														jsonArray5.put(data5);
 
-													JSONArray jsonArray5 = new JSONArray();
-													jsonArray5.put(data5);
+														List<NameValuePair> nvps5 = new ArrayList<NameValuePair>();
+														nvps5.add(new BasicNameValuePair("data", data5.toString()));
+														httppost5.setEntity(new UrlEncodedFormEntity(nvps5, HTTP.UTF_8));
 
-													List <NameValuePair> nvps5 = new ArrayList <NameValuePair>();
-													nvps5.add(new BasicNameValuePair("data", data5.toString()));
-													httppost5.setEntity(new UrlEncodedFormEntity(nvps5, HTTP.UTF_8));
+														httppost5.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+														HttpResponse response5 = httpclient5.execute(httppost5);
+														HttpEntity resEntity5 = response5.getEntity();
+														if (resEntity5 != null) {
+															String responseStr5 = EntityUtils.toString(resEntity5).trim();
+															Log.v(TAG, "Response: " + responseStr5);
+															Log.i("TAG", "" + response5.getStatusLine().getStatusCode());
+															//Toast.makeText(CheckinActivity.this,  responseStr5, Toast.LENGTH_LONG).show();
+															//you can add an if statement here and do other actions based on the response
+															{
+																JSONObject mainObject = new JSONObject(responseStr5);
+																String record = mainObject.getString("record");
+																if (record.equals("Yes")) {
+																	String time_over = mainObject.getString("time_over");
+																	if (time_over.equals("Yes")) {
+																		String checkin_status = mainObject.getString("checkin_status");
+																		if (checkin_status.equals("1")) {
+																			String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
+																			String no_of_checkin = mainObject.getString("no_of_checkin");
+																			String free_gift = mainObject.getString("free_gift");
+																			String disclaimer_message = mainObject.getString("disclaimer_message");
 
-													httppost5.setHeader(HTTP.CONTENT_TYPE,"application/x-www-form-urlencoded;charset=UTF-8");
-													HttpResponse response5 = httpclient5.execute(httppost5);
-													HttpEntity resEntity5 = response5.getEntity();
-													if (resEntity5 != null) {
-														String responseStr5 = EntityUtils.toString(resEntity5).trim();
-														Log.v(TAG, "Response: " +  responseStr5);
-														Log.i("TAG",""+response5.getStatusLine().getStatusCode());
-														//Toast.makeText(CheckinActivity.this,  responseStr5, Toast.LENGTH_LONG).show();
-														//you can add an if statement here and do other actions based on the response
-														{
-															JSONObject mainObject = new JSONObject(responseStr5);
-															String record = mainObject.getString("record");
-															if(record.equals("Yes")) {
-																String time_over = mainObject.getString("time_over");
-																if(time_over.equals("Yes")) {
-																	String checkin_status = mainObject.getString("checkin_status");
-																	if(checkin_status.equals("1")) {
-																		String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
-																		String no_of_checkin = mainObject.getString("no_of_checkin");
-																		String free_gift = mainObject.getString("free_gift");
-																		String disclaimer_message = mainObject.getString("disclaimer_message");
+																			SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+																			Editor editor = pref.edit();
+																			editor.putString("no_of_checkin", no_of_checkin);
+																			editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
+																			editor.putString("free_gift", free_gift);
+																			editor.putString("disclaimer_message", disclaimer_message);
+																			editor.apply();
 
-																		SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-																		Editor editor = pref.edit();
-																		editor.putString("no_of_checkin", no_of_checkin);
-																		editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-																		editor.putString("free_gift", free_gift);
-																		editor.putString("disclaimer_message", disclaimer_message);
-																		editor.apply();
+																			Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+																			startActivity(i);
+																			CheckinActivity.this.finish();
 
-																		Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-																		startActivity(i);
-																		CheckinActivity.this.finish();
-
+																		}
 																	}
 																}
 															}
+
 														}
+														//Toast.makeText(CheckinActivity.this, "Data: " +data5,Toast.LENGTH_LONG).show();
 
+													} catch (ClientProtocolException e) {
+														e.printStackTrace();
+													} catch (IOException e) {
+														e.printStackTrace();
+													} catch (Throwable t) {
+														Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+																Toast.LENGTH_LONG).show();
 													}
-													//Toast.makeText(CheckinActivity.this, "Data: " +data5,Toast.LENGTH_LONG).show();
-
-												} catch (ClientProtocolException e) {
-													e.printStackTrace();
-												} catch (IOException e) {
-													e.printStackTrace();
-												} catch (Throwable t) {
-													Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
-															Toast.LENGTH_LONG).show();
 												}
-											}
 
-										});
-										alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog,int id) {
+											});
+											alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+												public void onClick(DialogInterface dialog, int id) {
 
-												Intent i = new Intent(CheckinActivity.this, MainActivity.class);
-												startActivity(i);
-												CheckinActivity.this.finish();
+													Intent i = new Intent(CheckinActivity.this, MainActivity.class);
+													startActivity(i);
+													CheckinActivity.this.finish();
 
-											}
-										});
-										AlertDialog alertDialog = alertDialogBuilder.create();
-										alertDialog.show();
-										alertDialog.setCancelable(false);
-									}
-								}else if(record.equals("Yes")) {
-									String time_over = mainObject.getString("time_over");
-									if(time_over.equals("No")) {
-										Toast toast = Toast.makeText(CheckinActivity.this,"Next Check-In Time Not Over", Toast.LENGTH_LONG);
-										toast.setGravity(Gravity.CENTER, 0, 0);
-										LinearLayout toastLayout = (LinearLayout) toast.getView();
-										TextView toastTV = (TextView) toastLayout.getChildAt(0);
-										toastTV.setTextSize(45);
-										toastTV.setTextColor(Color.WHITE);
-										toast.getView().setBackgroundResource(R.drawable.customtoast);
-										toast.show();
-									}else if(time_over.equals("Yes")) {
-										String checkin_status = mainObject.getString("checkin_status");
-										if(checkin_status.equals("1")) {
+												}
+											});
+											AlertDialog alertDialog = alertDialogBuilder.create();
+											alertDialog.show();
+											alertDialog.setCancelable(false);
+										}
+									} else if (record.equals("Yes")) {
+										String time_over = mainObject.getString("time_over");
+										if (time_over.equals("No")) {
+											Toast toast = Toast.makeText(CheckinActivity.this, "Next Check-In Time Not Over", Toast.LENGTH_LONG);
+											toast.setGravity(Gravity.CENTER, 0, 0);
+											LinearLayout toastLayout = (LinearLayout) toast.getView();
+											TextView toastTV = (TextView) toastLayout.getChildAt(0);
+											toastTV.setTextSize(45);
+											toastTV.setTextColor(Color.WHITE);
+											toast.getView().setBackgroundResource(R.drawable.customtoast);
+											toast.show();
+										} else if (time_over.equals("Yes")) {
+											String checkin_status = mainObject.getString("checkin_status");
+											if (checkin_status.equals("1")) {
 
-											String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
-											String no_of_checkin = mainObject.getString("no_of_checkin");
-											String free_gift = mainObject.getString("free_gift");
-											String disclaimer_message = mainObject.getString("disclaimer_message");
+												String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
+												String no_of_checkin = mainObject.getString("no_of_checkin");
+												String free_gift = mainObject.getString("free_gift");
+												String disclaimer_message = mainObject.getString("disclaimer_message");
 
-											SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-											Editor editor = pref.edit();
-											editor.putString("no_of_checkin", no_of_checkin);
-											editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-											editor.putString("free_gift", free_gift);
-											editor.putString("disclaimer_message", disclaimer_message);
-											editor.apply();
-											//editor.commit();
+												SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+												Editor editor = pref.edit();
+												editor.putString("no_of_checkin", no_of_checkin);
+												editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
+												editor.putString("free_gift", free_gift);
+												editor.putString("disclaimer_message", disclaimer_message);
+												editor.apply();
+												//editor.commit();
                         	   					
                         	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
             				            		toast.setGravity(Gravity.CENTER, 0, 0);
@@ -491,64 +501,70 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
             				            		toastTV.setTextColor(Color.WHITE);
             				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
             				            		toast.show(); */
-											//MediaPlayer mp;
-											MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-											mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+												//MediaPlayer mp;
+												MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+												mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
-												@Override
-												public void onCompletion(MediaPlayer mp) {
-													// TODO Auto-generated method stub
-													mp.reset();
-													mp.release();
-													mp=null;
-												}
+													@Override
+													public void onCompletion(MediaPlayer mp) {
+														// TODO Auto-generated method stub
+														mp.reset();
+														mp.release();
+														mp = null;
+													}
 
-											});
-											mp.start();//sound.playShortResource(R.raw.ping);
+												});
+												mp.start();//sound.playShortResource(R.raw.ping);
 
 
-											Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-											startActivity(i);
-											CheckinActivity.this.finish();
+												Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+												startActivity(i);
+												CheckinActivity.this.finish();
 
-										}else if(checkin_status.equals("2")) {
-											MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-											mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+											} else if (checkin_status.equals("2")) {
+												MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+												mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
-												@Override
-												public void onCompletion(MediaPlayer mp) {
-													// TODO Auto-generated method stub
-													mp.reset();
-													mp.release();
-													mp=null;
-												}
+													@Override
+													public void onCompletion(MediaPlayer mp) {
+														// TODO Auto-generated method stub
+														mp.reset();
+														mp.release();
+														mp = null;
+													}
 
-											});
-											mp.start();
+												});
+												mp.start();
 
-											Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
-											startActivity(i);
-											CheckinActivity.this.finish();
+												Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
+												startActivity(i);
+												CheckinActivity.this.finish();
 
+											}
 										}
 									}
 								}
 							}
+							edit_message.setText("");
+							//Toast.makeText(getBaseContext(),"Sent",Toast.LENGTH_SHORT).show();
+							//Toast.makeText(CheckinActivity.this, "Data: " +data1,Toast.LENGTH_LONG).show();
 						}
-						edit_message.setText("");
-						//Toast.makeText(getBaseContext(),"Sent",Toast.LENGTH_SHORT).show();
-						//Toast.makeText(CheckinActivity.this, "Data: " +data1,Toast.LENGTH_LONG).show();
+						else
+						{
+							//Logic for SIGN UP SERVICE
+						}
 
-					} catch (ClientProtocolException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (Throwable t) {
-						Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
-								Toast.LENGTH_LONG).show();
-					}
+						}catch(ClientProtocolException e){
+							e.printStackTrace();
+						}catch(IOException e){
+							e.printStackTrace();
+						}catch(Throwable t){
+							Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+									Toast.LENGTH_LONG).show();
+						}
 
-					Buttonsend.setEnabled(true);
+						Buttonsend.setEnabled(true);
+
 				}
 			}
 		});
