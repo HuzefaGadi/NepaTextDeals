@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/huzefaasger/Downloads/NepaTextDeals1/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/Users/Rashida/Downloads/NepaTextDeals/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="Enterurl">Enter Url</string>
     <string name="app_name">NEPA TextDeals</string>
@@ -54,7 +54,7 @@
     <string name="welcome">Check In Below Each Time You Make A Purchase. You Will Earn FREE Rewards Just For Being Our Loyal Customer.</string>
     <string name="welcome1">5 Check-In\'s Earns A FREE</string>
     <string name="welcome2"><b>LARGE 3 TOPPING PIZZA</b></string>
-    <!-- From: file:/C:/Users/huzefaasger/Downloads/NepaTextDeals1/app/src/main/res/values/styles.xml -->
+    <!-- From: file:/Users/Rashida/Downloads/NepaTextDeals/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--

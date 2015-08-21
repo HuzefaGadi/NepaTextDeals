@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\huzefaasger\Desktop\Huzefa Softwares\android-sdk_r24.3.3-windows\android-sdk-windows\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jar="/Users/Rashida/Library/Android/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
-        <dex dex="C:\Users\huzefaasger\Downloads\NepaTextDeals1\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-2fa059fe9b29836f7413952e4524273e18e5723b.jar" />
+        <dex dex="/Users/Rashida/Downloads/NepaTextDeals/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bb9418285ef1bc4aaee48b8e283284e65d1df40e.jar" />
     </item>
 
 </items>
