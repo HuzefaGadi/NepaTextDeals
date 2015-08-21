@@ -52,7 +52,10 @@
     <string name="banner_alt">icon</string>
     <string name="banner_alt1">logo</string>
     <string name="Enterurl">Enter Url</string>
-    
-    
+    <string name="startForSignUp">Join Our Text Club</string>
+    <string name="start1ForSignUp">Recieve Money Saving Coupons and Alerts Sent Directly To Your Mobile Phone For Signing Up Today!</string>
+    <string name="getstartedForSignUp">Touch Here To Sign Up</string>
+    <string name="messagecheckForSignUp" />
+
 
 </resources>
