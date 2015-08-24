@@ -25,8 +25,11 @@
     <string name="messagetimecheckin"><b>You Have Already Checked-In.</b></string>
     <string name="messagetimecheckin1">You Can Only Check-In Once Per 24 Hour Period. </string>
     <string name="messagenumbercheckin"><b>Thank You For Your Purchase!</b></string>
+    <string name="messagenumbercheckinForSignUp"><b>Thank You For Signing Up!</b></string>
     <string name="messagenumbercheckin1">You Have Checked In 3 Times. You Have 7 More Check In\'s Before You Earn Your FREE Reward.</string>
+    <string name="messagenumbercheckin1ForSignUp">You Have Successfully Signed Up To Our Text Club! You Should Be Receiving A Welcome Message On Your Mobile Phone In A Few Seconds.  </string>
     <string name="messagenumbercheckin11">10 Check In\'s Earns a FREE</string>
+    <string name="blank"> </string>
     <string name="messagenumbercheckin2"><b>LARGE 3 TOPPING PIZZA</b></string>
     <string name="messageincorrectredeem"><b>Invalid Reward Code</b></string>
     <string name="messageincorrectredeem1">You Have Entered An Invalid Reward Code. Please Check Your Code And Try Again.</string>

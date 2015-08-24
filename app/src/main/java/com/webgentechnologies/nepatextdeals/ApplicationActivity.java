@@ -16,6 +16,7 @@ public class ApplicationActivity extends Activity {
     public static final long DISCONNECT_TIMEOUT = 1000*20; // 5 min = 5 * 60 * 1000 ms
     SharedPreferences pref;
     SharedPreferences.Editor edit;
+    boolean kioskMode;
     private Handler disconnectHandler = new Handler(){
         public void handleMessage(Message msg) {
         }
@@ -29,7 +30,14 @@ public class ApplicationActivity extends Activity {
             switch (activityToShow)
             {
                 case 1:
-                    edit.putInt("ACTIVITY_TO_SHOW",2);
+                    if(kioskMode)
+                    {
+                        edit.putInt("ACTIVITY_TO_SHOW",2);
+                    }
+                    else
+                    {
+                        edit.putInt("ACTIVITY_TO_SHOW", 1);
+                    }
                     edit.commit();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
@@ -63,6 +71,12 @@ public class ApplicationActivity extends Activity {
         super.onCreate(savedInstanceState);
         pref= this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
         edit = pref.edit();
+        String kioskModeString = pref.getString("kiosk_mode", "2");
+        if (kioskModeString.equals("2")) {
+            kioskMode = false;
+        } else {
+            kioskMode = true;
+        }
 
     }
 

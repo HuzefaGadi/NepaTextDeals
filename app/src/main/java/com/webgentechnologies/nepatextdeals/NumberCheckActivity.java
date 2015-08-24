@@ -36,6 +36,7 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
 	ImageView imageView2;
 	String imagelogo;
 	private ProgressBar ProgressBar1;
+	boolean kioskMode;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,7 +56,14 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
 		String no_of_checkin1 = pref.getString("no_of_checkin", null);
 		String subscriber_no_of_checkin1 = pref.getString("subscriber_no_of_checkin", null);
 		String business_logo1 = pref.getString("business_logo", null);
-		
+
+		String kioskModeString = pref.getString("kiosk_mode", "2");
+		if (kioskModeString.equals("2")) {
+			kioskMode = false;
+		} else {
+			kioskMode = true;
+		}
+
         imagelogo = business_logo1;
 		
 		if(imagelogo == null){
@@ -69,47 +77,69 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
 		new DownloadImageTask4((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 		
 		}
-		
-		int myNum = 0;
-
-		try {
-		    myNum = Integer.parseInt(no_of_checkin1);
-		} catch(NumberFormatException nfe) {
-		  // Handle parse error.
-		}
-		
-		int myNum2 = 0;
-
-		try {
-		    myNum2 = Integer.parseInt(subscriber_no_of_checkin1);
-		} catch(NumberFormatException nfe) {
-		  // Handle parse error.
-		}
-		
-		int myNum3 = myNum - myNum2 ;
-		
-		messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
-		messagenumbercheckin1.setText("You Have Checked In " +subscriber_no_of_checkin1 + " Times. You Have " +myNum3 +" More Check In's Before You Earn Your FREE Reward.");
-		
-		messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
-		messagenumbercheckin11.setText(no_of_checkin1 + " Check In's Earns a FREE");
-		
 		SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String free_gift1 = pref1.getString("free_gift", null);
-        String disclaimer_message1 = pref1.getString("disclaimer_message", null);
-		
+		if(kioskMode)
+		{
+			int myNum = 0;
+
+			try {
+				myNum = Integer.parseInt(no_of_checkin1);
+			} catch(NumberFormatException nfe) {
+				// Handle parse error.
+			}
+
+			int myNum2 = 0;
+
+			try {
+				myNum2 = Integer.parseInt(subscriber_no_of_checkin1);
+			} catch(NumberFormatException nfe) {
+				// Handle parse error.
+			}
+
+			int myNum3 = myNum - myNum2 ;
+
+			messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
+			messagenumbercheckin1.setText("You Have Checked In " +subscriber_no_of_checkin1 + " Times. You Have " +myNum3 +" More Check In's Before You Earn Your FREE Reward.");
+
+			messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
+			messagenumbercheckin11.setText(no_of_checkin1 + " Check In's Earns a FREE");
+
+
+			String free_gift1 = pref1.getString("free_gift", null);
+			messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
+			messagenumbercheckin2.setText(free_gift1);
+			messagenumbercheckin2.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+			messagenumbercheckin2.setTypeface(null, Typeface.BOLD);
+
+		}
+		else
+		{
+			messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
+			messagenumbercheckin11.setText("");
+
+			messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
+			messagenumbercheckin2.setText("");
+
+			messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
+			messagenumbercheckin1.setText(R.string.messagenumbercheckin1ForSignUp);
+
+		}
+
+
+
+
+
+		String disclaimer_message1 = pref1.getString("disclaimer_message", null);
+
 		footer = (TextView) findViewById(R.id.footer);
 		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
-		
-		messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
-		messagenumbercheckin2.setText(free_gift1);
-		messagenumbercheckin2.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-		messagenumbercheckin2.setTypeface(null, Typeface.BOLD);
 		
 		String fontPath = "fonts/helvetica67medium.ttf";
         TextView txt = (TextView) findViewById(R.id.messagenumbercheckin);
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
         txt.setTypeface(tf);
+
+		txt.setText(kioskMode ? R.string.messagenumbercheckin : R.string.messagenumbercheckinForSignUp);
         
         TextView footer = (TextView) findViewById(R.id.footer);
         Typeface.createFromAsset(getAssets(), fontPath);
@@ -122,14 +152,17 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
         TextView txt1 = (TextView) findViewById(R.id.messagenumbercheckin1);
         Typeface.createFromAsset(getAssets(), fontPath);
         txt1.setTypeface(tf);
-        
+
+
         TextView txt11 = (TextView) findViewById(R.id.messagenumbercheckin11);
         Typeface.createFromAsset(getAssets(), fontPath);
         txt11.setTypeface(tf);
+
         
         TextView txt2 = (TextView) findViewById(R.id.messagenumbercheckin2);
         Typeface.createFromAsset(getAssets(), fontPath);
         txt2.setTypeface(tf);
+
 
 
 }

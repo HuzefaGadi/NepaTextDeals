@@ -349,10 +349,20 @@ public class MainActivity extends ApplicationActivity {
 
                                                       if (shouldAllowAhead) {
 
-                                                          Intent i = new Intent(MainActivity.this, MainScreenActivity.class);
-                                                          startActivity(i);
-                                                          shouldAllowAhead = false;
-                                                          MainActivity.this.finish();
+                                                          if(kioskMode)
+                                                          {
+                                                              Intent i = new Intent(MainActivity.this, MainScreenActivity.class);
+                                                              startActivity(i);
+                                                              shouldAllowAhead = false;
+                                                              MainActivity.this.finish();
+                                                          }
+                                                          else {
+                                                              Intent i = new Intent(MainActivity.this, CheckinActivity.class);
+                                                              startActivity(i);
+                                                              shouldAllowAhead = false;
+                                                              MainActivity.this.finish();
+                                                          }
+
 
                                                       } else {
 
@@ -402,9 +412,20 @@ public class MainActivity extends ApplicationActivity {
                                                                           editor.putString("button_push_for_checkins", button_push_for_checkins);
                                                                           editor.putString("kiosk_mode", kiosk_mode);
                                                                           editor.apply();
-                                                                          Intent i = new Intent(MainActivity.this, MainScreenActivity.class);
-                                                                          startActivity(i);
-                                                                          MainActivity.this.finish();
+                                                                          kioskMode=kiosk_mode.equals("1")?true:false;
+                                                                          if(kioskMode)
+                                                                          {
+                                                                              Intent i = new Intent(MainActivity.this, MainScreenActivity.class);
+                                                                              startActivity(i);
+                                                                              shouldAllowAhead = false;
+                                                                              MainActivity.this.finish();
+                                                                          }
+                                                                          else {
+                                                                              Intent i = new Intent(MainActivity.this, CheckinActivity.class);
+                                                                              startActivity(i);
+                                                                              shouldAllowAhead = false;
+                                                                              MainActivity.this.finish();
+                                                                          }
                                                                       } catch (JSONException e) {
                                                                           Log.e("JSON Parser", "Error parsing data " + e.toString());
                                                                       }
