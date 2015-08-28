@@ -56,7 +56,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RedeemActivity extends Activity implements OnTouchListener {
+public class RedeemActivity extends ApplicationActivity implements OnTouchListener {
 
     private Button Buttonenter, b1, b2, b3, b4, b5, b6, b7, b8, b9, clear, b0, back;
     ImageView imageView2;
@@ -294,10 +294,12 @@ public class RedeemActivity extends Activity implements OnTouchListener {
             @Override
             public void onClick(View view) {
 
+                Buttonenter.setEnabled(false);
                 timerCount.cancel();
 
                 String pass = edit_messageredeem.getText().toString();
                 if (pass.equals("198-3")) {
+                    Buttonenter.setEnabled(true);
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_HOME);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -311,6 +313,7 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                    Buttonenter.setEnabled(true);
                 } else if (pass.equals("111-983-")) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RedeemActivity.this);
                     alertDialogBuilder.setMessage("Enter Password:");
@@ -341,6 +344,7 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                     });
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
+                    Buttonenter.setEnabled(true);
                 } else if ((pass.length() < 11) && (!pass.equals("198-3")) && (!pass.equals("111-983-")) && (!pass.equals("999-99"))) {
                     Toast toast = Toast.makeText(RedeemActivity.this, "Enter Full Coupon Code", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
@@ -350,6 +354,7 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                     toastTV.setTextColor(Color.WHITE);
                     toast.getView().setBackgroundResource(R.drawable.customtoast);
                     toast.show();
+                    Buttonenter.setEnabled(true);
                 }
 
                 //	else
@@ -395,6 +400,7 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                                 try {
                                     JSONObject mainObject = new JSONObject(responseStr);
                                     String code_valid = mainObject.getString("code_valid");
+                                    Buttonenter.setEnabled(true);
                                     if (code_valid.equals("Yes")) {
                                         String free_gift = mainObject.getString("free_gift");
                                         String coupon_code_description = mainObject.getString("coupon_code_description");
@@ -448,10 +454,12 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                                 } catch (JSONException e) {
                                     Log.e("JSON Parser", "Error parsing data " + e.toString());
                                     Toast.makeText(RedeemActivity.this, "Invalid Coupon Code", Toast.LENGTH_LONG).show();
+                                    Buttonenter.setEnabled(true);
                                 }
                             }
                         }
-                        edit_messageredeem.setText(""); //reset the message text field
+                        edit_messageredeem.setText("");
+                        Buttonenter.setEnabled(true);//reset the message text field
                         //    Toast.makeText(getBaseContext(),"Sent",Toast.LENGTH_SHORT).show();
                         //Toast.makeText(RedeemActivity.this, "Data: " +data1,Toast.LENGTH_LONG).show();
 
@@ -467,9 +475,12 @@ public class RedeemActivity extends Activity implements OnTouchListener {
                         Toast.makeText(RedeemActivity.this, "Request failed: " + t.toString(),
                                 Toast.LENGTH_LONG).show();
                     }
+
+                    Buttonenter.setEnabled(true);
                 } else {
                     Toast.makeText(RedeemActivity.this, "No Internet Connection",
                             Toast.LENGTH_LONG).show();
+                    Buttonenter.setEnabled(true);
                 }
             }
         });

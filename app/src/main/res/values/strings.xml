@@ -2,12 +2,12 @@
 
     <string name="app_name">NEPA TextDeals</string>
     <string name="getstarted"><b>Touch Here To Get Started</b></string>
-    <string name="welcome">Check In Below Each Time You Make A Purchase. You Will Earn FREE Rewards Just For Being Our Loyal Customer.</string>
-    <string name="welcome1">5 Check-In\'s Earns A FREE</string>
+    <string name="welcome">Check-In Below Each Time You Make A Purchase. You Will Earn FREE Rewards Just For Being Our Loyal Customer.</string>
+    <string name="welcome1">5 Check-Ins Earns A FREE</string>
     <string name="welcome2"><b>LARGE 3 TOPPING PIZZA</b></string>
-    <string name="check"><b>Check In</b></string>
+    <string name="check"><b>Check-In</b></string>
     <string name="redeem"><b>Redeem Coupon</b></string>
-    <string name="messagecheck"><b>Enter Your Mobile Number To Check In</b></string>
+    <string name="messagecheck"><b>Enter Your Mobile Number To Check-In</b></string>
     <string name="edit_message">Enter Your Number</string>
     <string name="button_send"><b>Enter</b></string>
     <string name="phone_hint"></string>
@@ -22,13 +22,13 @@
     <string name="button_return"><b>Return To Main Screen</b></string>
     <string name="messagesuccesscheckin1">You Have Checked-In 10 Times And Earned Your Reward For Being Our Loyal Customer.</string>
     <string name="messagesuccesscheckin2">A Coupon Code Has Been Sent To Your Mobile Phone. Enter That Under The "Redeem Coupon" Button On The Main Screen When You Wish To Redeem Your FREE Reward.</string>
-    <string name="messagetimecheckin"><b>You Have Already Checked-In.</b></string>
+    <string name="messagetimecheckin"><b>You Have Already Checked In.</b></string>
     <string name="messagetimecheckin1">You Can Only Check-In Once Per 24 Hour Period. </string>
     <string name="messagenumbercheckin"><b>Thank You For Your Purchase!</b></string>
     <string name="messagenumbercheckinForSignUp"><b>Thank You For Signing Up!</b></string>
-    <string name="messagenumbercheckin1">You Have Checked In 3 Times. You Have 7 More Check In\'s Before You Earn Your FREE Reward.</string>
+    <string name="messagenumbercheckin1">You Have Checked In 3 Times. You Have 7 More Check-Ins Before You Earn Your FREE Reward.</string>
     <string name="messagenumbercheckin1ForSignUp">You Have Successfully Signed Up To Our Text Club! You Should Be Receiving A Welcome Message On Your Mobile Phone In A Few Seconds.  </string>
-    <string name="messagenumbercheckin11">10 Check In\'s Earns a FREE</string>
+    <string name="messagenumbercheckin11">10 Check-Ins Earns a FREE</string>
     <string name="blank"> </string>
     <string name="messagenumbercheckin2"><b>LARGE 3 TOPPING PIZZA</b></string>
     <string name="messageincorrectredeem"><b>Invalid Reward Code</b></string>

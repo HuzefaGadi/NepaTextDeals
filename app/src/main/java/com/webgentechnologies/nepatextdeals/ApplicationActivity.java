@@ -1,6 +1,7 @@
 package com.webgentechnologies.nepatextdeals;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,12 +12,15 @@ import android.os.Message;
 /**
  * Created by huzefaasger on 19-08-2015.
  */
+
 public class ApplicationActivity extends Activity {
 
     public static final long DISCONNECT_TIMEOUT = 1000*20; // 5 min = 5 * 60 * 1000 ms
     SharedPreferences pref;
     SharedPreferences.Editor edit;
     boolean kioskMode;
+
+
     private Handler disconnectHandler = new Handler(){
         public void handleMessage(Message msg) {
         }

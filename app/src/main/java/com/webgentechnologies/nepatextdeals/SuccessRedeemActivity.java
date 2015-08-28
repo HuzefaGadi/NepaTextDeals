@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -39,10 +40,22 @@ public class SuccessRedeemActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	    setContentView(R.layout.activity_successredeem);
 		addListenerOnButton();
-		
+		MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+		mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				mp.reset();
+				mp.release();
+				mp = null;
+			}
+
+		});
+		mp.start();
 		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
 		String free_gift1 = pref.getString("free_gift", null);
 		String coupon_code_description = pref.getString("coupon_code_description", null);

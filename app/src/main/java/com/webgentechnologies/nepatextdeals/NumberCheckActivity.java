@@ -99,10 +99,10 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
 			int myNum3 = myNum - myNum2 ;
 
 			messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
-			messagenumbercheckin1.setText("You Have Checked In " +subscriber_no_of_checkin1 + " Times. You Have " +myNum3 +" More Check In's Before You Earn Your FREE Reward.");
+			messagenumbercheckin1.setText("You Have Checked In " +subscriber_no_of_checkin1 + " Times. You Have " +myNum3 +" More Check-Ins Before You Earn Your FREE Reward.");
 
 			messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
-			messagenumbercheckin11.setText(no_of_checkin1 + " Check In's Earns a FREE");
+			messagenumbercheckin11.setText(no_of_checkin1 + " Check-Ins Earns a FREE");
 
 
 			String free_gift1 = pref1.getString("free_gift", null);
