@@ -20,7 +20,7 @@
     <string name="messagesuccessredeem3">Show This Screen To The Cashier. Thank You For Being Our Loyal Customer.</string>
     <string name="messagesuccesscheckin"><b>Congratulations!</b></string>
     <string name="button_return"><b>Return To Main Screen</b></string>
-    <string name="messagesuccesscheckin1">You Have Checked-In 10 Times And Earned Your Reward For Being Our Loyal Customer.</string>
+    <string name="messagesuccesscheckin1">You Have Checked In 10 Times And Earned Your Reward For Being Our Loyal Customer.</string>
     <string name="messagesuccesscheckin2">A Coupon Code Has Been Sent To Your Mobile Phone. Enter That Under The "Redeem Coupon" Button On The Main Screen When You Wish To Redeem Your FREE Reward.</string>
     <string name="messagetimecheckin"><b>You Have Already Checked In.</b></string>
     <string name="messagetimecheckin1">You Can Only Check-In Once Per 24 Hour Period. </string>
@@ -55,10 +55,10 @@
     <string name="banner_alt">icon</string>
     <string name="banner_alt1">logo</string>
     <string name="Enterurl">Enter Url</string>
-    <string name="startForSignUp">Join Our Text Club</string>
+    <string name="startForSignUp"><b>Join Our Text Club</b></string>
     <string name="start1ForSignUp">Recieve Money Saving Coupons and Alerts Sent Directly To Your Mobile Phone For Signing Up Today!</string>
-    <string name="getstartedForSignUp">Touch Here To Sign Up</string>
-    <string name="messagecheckForSignUp" />
+    <string name="getstartedForSignUp"><b>Touch Here To Sign Up</b></string>
+    <string name="messagecheckForSignUp"><b>Enter Your Mobile Number To Sign Up</b></string>
 
 
 </resources>

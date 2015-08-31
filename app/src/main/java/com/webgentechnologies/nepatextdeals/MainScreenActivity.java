@@ -115,7 +115,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 		welcome2.setTypeface(null, Typeface.BOLD);
 
 		welcome1 = (TextView) findViewById(R.id.welcome1);
-		welcome1.setText(no_of_checkin1 + " Check-Ins Earns a FREE");
+		welcome1.setText(no_of_checkin1 + " Check-Ins Earn a FREE");
 
 		String fontPath = "fonts/helvetica67medium.ttf";
 		TextView txt2 = (TextView) findViewById(R.id.welcome2);

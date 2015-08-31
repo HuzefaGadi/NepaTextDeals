@@ -776,8 +776,18 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
                                 {
                                     public void onClick(View view) {
-                                        Intent i = new Intent(CheckinActivity.this, MainScreenActivity.class);
-                                        startActivity(i);
+
+                                        if(kioskMode)
+                                        {
+                                            Intent i = new Intent(CheckinActivity.this, MainScreenActivity.class);
+                                            startActivity(i);
+                                        }
+                                        else
+                                        {
+                                            Intent i = new Intent(CheckinActivity.this, MainActivity.class);
+                                            startActivity(i);
+                                        }
+
                                         CheckinActivity.this.finish();
                                         timerCount.cancel();
                                     }
