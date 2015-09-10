@@ -57,7 +57,7 @@ public class SuccessRedeemActivity extends Activity {
 		});
 		mp.start();
 		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String free_gift1 = pref.getString("free_gift", null);
+		String free_gift1 = pref.getString("free_gift_for_redeem", null);
 		String coupon_code_description = pref.getString("coupon_code_description", null);
         String disclaimer_message1 = pref.getString("disclaimer_message", null);
         String business_logo1 = pref.getString("business_logo", null);

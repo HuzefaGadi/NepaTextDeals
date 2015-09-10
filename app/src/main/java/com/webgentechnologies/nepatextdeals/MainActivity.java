@@ -71,7 +71,7 @@ public class MainActivity extends ApplicationActivity {
     ImageView imageView2;
     String imagelogo;
     int countOfClicks;
-    boolean kioskMode = false;
+    boolean kioskMode = true;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,7 +140,7 @@ public class MainActivity extends ApplicationActivity {
         //Toast.makeText(MainActivity.this, validurl2, Toast.LENGTH_LONG).show();
         extractData();
         //1 is kiosk mode the normal one else 2 : signup
-        String kioskModeString = pref.getString("kiosk_mode","2");
+        String kioskModeString = pref.getString("kiosk_mode","1");
         if(kioskModeString.equals("2"))
         {
             kioskMode = false;

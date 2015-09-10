@@ -57,7 +57,7 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
 		String subscriber_no_of_checkin1 = pref.getString("subscriber_no_of_checkin", null);
 		String business_logo1 = pref.getString("business_logo", null);
 
-		String kioskModeString = pref.getString("kiosk_mode", "2");
+		String kioskModeString = pref.getString("kiosk_mode", "1");
 		if (kioskModeString.equals("2")) {
 			kioskMode = false;
 		} else {

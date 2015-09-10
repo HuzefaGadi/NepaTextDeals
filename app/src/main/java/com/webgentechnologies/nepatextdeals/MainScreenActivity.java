@@ -46,12 +46,27 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 	EditText textToProceed;
 	boolean allowed = false;
 	int push_button=2;
+	SharedPreferences preferences;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_mainscreen);
+		String kioskModeString = pref.getString("kiosk_mode", "1");
+		if (kioskModeString.equals("2")) {
+			kioskMode = false;
+		} else {
+			kioskMode = true;
+		}
+		if(!kioskMode)
+		{
+
+			Intent intent = new Intent(this,CheckinActivity.class);
+			startActivity(intent);
+			finish();
+		}
+
 		addListenerOnButton();
 		senceTouch = findViewById(R.id.layout_mainscreen);
 		senceTouch.setOnTouchListener(this);

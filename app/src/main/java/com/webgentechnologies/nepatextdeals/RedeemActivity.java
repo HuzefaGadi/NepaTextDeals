@@ -402,11 +402,11 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                                     String code_valid = mainObject.getString("code_valid");
                                     Buttonenter.setEnabled(true);
                                     if (code_valid.equals("Yes")) {
-                                        String free_gift = mainObject.getString("free_gift");
+                                        String free_gift = mainObject.getString("free_gift_for_redeem");
                                         String coupon_code_description = mainObject.getString("coupon_code_description");
                                         Intent i = new Intent(RedeemActivity.this, SuccessRedeemActivity.class);
                                         SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-                                        pref.edit().putString("free_gift",free_gift).commit();
+                                        pref.edit().putString("free_gift_for_redeem",free_gift).commit();
                                         pref.edit().putString("coupon_code_description",coupon_code_description).commit();
                                         startActivity(i);
                                         RedeemActivity.this.finish();

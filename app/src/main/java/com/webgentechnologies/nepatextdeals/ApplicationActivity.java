@@ -40,17 +40,23 @@ public class ApplicationActivity extends Activity {
                     }
                     else
                     {
-                        edit.putInt("ACTIVITY_TO_SHOW", 1);
+                        edit.putInt("ACTIVITY_TO_SHOW", 3);
                     }
                     edit.commit();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     break;
                 case 2:
                     edit.putInt("ACTIVITY_TO_SHOW", 1);
                     edit.commit();
-                    startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
                     finish();
+                    startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
+                    break;
+                case 3:
+                    edit.putInt("ACTIVITY_TO_SHOW", 1);
+                    edit.commit();
+                    finish();
+                    startActivity(new Intent(getApplicationContext(), CheckinActivity.class));
                     break;
             }
         }

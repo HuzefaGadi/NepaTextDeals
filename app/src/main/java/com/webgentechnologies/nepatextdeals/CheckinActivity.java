@@ -112,7 +112,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
             new DownloadImageTask1((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
-        String kioskModeString = pref.getString("kiosk_mode", "2");
+        String kioskModeString = pref.getString("kiosk_mode", "1");
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {
