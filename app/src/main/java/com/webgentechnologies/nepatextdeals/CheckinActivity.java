@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,6 +71,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     SharedPreferences pref;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
+    ProgressDialog progress;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,14 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
+
+
+        progress=new ProgressDialog(this);
+        progress.setMessage("Please wait..");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setCancelable(false);
+
+
 
         sound = new SoundPoolPlayer(this);
         SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
@@ -287,7 +297,10 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                                   toast.show();
                                               } else {
                                                   Buttonsend.setEnabled(false);
-
+                                                  if(progress!=null)
+                                                  {
+                                                      progress.show();
+                                                  }
 
                                                   try {
 
@@ -649,6 +662,11 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                                   }
 
                                                   Buttonsend.setEnabled(true);
+                                                  if(progress!=null)
+                                                  {
+                                                      progress.hide();
+
+                                                  }
 
                                               }
                                           }

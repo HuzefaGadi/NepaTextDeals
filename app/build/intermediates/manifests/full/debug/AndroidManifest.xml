@@ -52,7 +52,8 @@
         <activity android:name="com.webgentechnologies.nepatextdeals.ApplicationActivity" />
         <activity
             android:name="com.webgentechnologies.nepatextdeals.MainScreenActivity"
-            android:screenOrientation="sensorPortrait" />
+            android:screenOrientation="sensorPortrait"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.webgentechnologies.nepatextdeals.RedeemActivity"
             android:screenOrientation="sensorPortrait" />

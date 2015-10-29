@@ -102,7 +102,7 @@ public class MainActivity extends ApplicationActivity {
         //TO CHANGE LATER
         customViewGroup view = new customViewGroup(this);
 
-		manager.addView(view, localLayoutParams);
+		//manager.addView(view, localLayoutParams);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);

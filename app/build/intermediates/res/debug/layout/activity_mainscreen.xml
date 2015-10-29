@@ -59,7 +59,7 @@
         android:background="@drawable/custombutton"
         android:paddingBottom="12dp"
         android:paddingRight="6dp"
-       
+
         android:text="@string/check"
         android:layout_marginTop="62dp"
         android:textColor="#ffffff"
@@ -105,7 +105,7 @@
         android:shadowDx="-2"
         android:shadowDy="4"
         android:shadowRadius="7"
-        android:textSize="30sp" />
+        android:textSize="40sp" />
 
     <TextView
         android:id="@+id/welcome"

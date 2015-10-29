@@ -195,7 +195,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
 									String organization_name = mainObject.getString("organization_name");
 									String status = mainObject.getString("status");
 									String disclaimer_message = mainObject.getString("disclaimer_message");
-
+									String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
 									if (url.equals("valid")) {
 										if (kiosk.equals("no")) {
 											ProgressBar1.setVisibility(View.GONE);
@@ -225,6 +225,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
 											editor.putString("organization_name", organization_name);
 											editor.putString("status", status);
 											editor.putString("disclaimer_message", disclaimer_message);
+											editor.putString("button_push_for_checkins",button_push_for_checkins);
 											editor.apply();
 											//editor.commit();
 
