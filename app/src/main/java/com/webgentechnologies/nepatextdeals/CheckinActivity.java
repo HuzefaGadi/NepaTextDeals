@@ -1,26 +1,5 @@
 package com.webgentechnologies.nepatextdeals;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -36,7 +15,6 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -56,9 +34,29 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CheckinActivity extends ApplicationActivity implements OnTouchListener {
 
-    private Button Buttonsend, b1, b2, b3, b4, b5, b6, b7, b8, b9, clear, b0, back;
+    private Button buttonSend, b1, b2, b3, b4, b5, b6, b7, b8, b9, clear, b0, back;
     EditText edit_message;
     ImageView imageView2;
     TextView footer;
@@ -66,8 +64,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     String merchant_id2, merchant_location_id2, user_id2, merchant_kiosk_id2, phonenumber, age;
     View senceTouch;
     MyCount timerCount;
-    private ProgressBar ProgressBar1;
-   // SoundPoolPlayer sound;
+    private ProgressBar progressBar;
+    // SoundPoolPlayer sound;
     SharedPreferences pref;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
@@ -81,7 +79,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_checkin);
         addListenerOnButton();
-     //   StrictMode.enableDefaults();
+        //   StrictMode.enableDefaults();
         senceTouch = findViewById(R.id.layout_checkin);
         senceTouch.setOnTouchListener(this);
         pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
@@ -89,14 +87,13 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         timerCount.start();
 
 
-        progress=new ProgressDialog(this);
+        progress = new ProgressDialog(this);
         progress.setMessage("Please wait..");
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.setCancelable(false);
 
 
-
-      //  sound = new SoundPoolPlayer(this);
+        //  sound = new SoundPoolPlayer(this);
         SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
         String merchant_id1 = pref.getString("merchant_id", null);
         String merchant_location_id1 = pref.getString("merchant_location_id", null);
@@ -114,11 +111,11 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         if (imagelogo == null) {
 
             //imageView2 = (ImageView) findViewById(R.id.imageView2);
-            ProgressBar1.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
         } else if (imagelogo != null) {
 
-            ProgressBar1.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             new DownloadImageTask1((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
@@ -139,63 +136,48 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
 
         TextView footer = (TextView) findViewById(R.id.footer);
-        Typeface.createFromAsset(getAssets(), fontPath);
         footer.setTypeface(tf);
 
         TextView edit_message = (TextView) findViewById(R.id.edit_message);
-        Typeface.createFromAsset(getAssets(), fontPath);
         edit_message.setTypeface(tf);
 
         TextView b1 = (TextView) findViewById(R.id.b1);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b1.setTypeface(tf);
 
         TextView b2 = (TextView) findViewById(R.id.b2);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b2.setTypeface(tf);
 
         TextView b3 = (TextView) findViewById(R.id.b3);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b3.setTypeface(tf);
 
         TextView b4 = (TextView) findViewById(R.id.b4);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b4.setTypeface(tf);
 
         TextView b5 = (TextView) findViewById(R.id.b5);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b5.setTypeface(tf);
 
         TextView b6 = (TextView) findViewById(R.id.b6);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b6.setTypeface(tf);
 
         TextView b7 = (TextView) findViewById(R.id.b7);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b7.setTypeface(tf);
 
         TextView b8 = (TextView) findViewById(R.id.b8);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b8.setTypeface(tf);
 
         TextView b9 = (TextView) findViewById(R.id.b9);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b9.setTypeface(tf);
 
         TextView b0 = (TextView) findViewById(R.id.b0);
-        Typeface.createFromAsset(getAssets(), fontPath);
         b0.setTypeface(tf);
 
         TextView clear = (TextView) findViewById(R.id.clear);
-        Typeface.createFromAsset(getAssets(), fontPath);
         clear.setTypeface(tf);
 
         TextView back = (TextView) findViewById(R.id.back);
-        Typeface.createFromAsset(getAssets(), fontPath);
         back.setTypeface(tf);
 
         TextView buttonsend = (TextView) findViewById(R.id.buttonsend);
-        Typeface.createFromAsset(getAssets(), fontPath);
         buttonsend.setTypeface(tf);
 
 
@@ -229,7 +211,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
     private void addListenerOnButton() {
         // TODO Auto-generated method stub
-        Buttonsend = (Button) findViewById(R.id.buttonsend);
+        buttonSend = (Button) findViewById(R.id.buttonsend);
         b1 = (Button) findViewById(R.id.b1);
         b2 = (Button) findViewById(R.id.b2);
         b3 = (Button) findViewById(R.id.b3);
@@ -242,8 +224,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         clear = (Button) findViewById(R.id.clear);
         b0 = (Button) findViewById(R.id.b0);
         back = (Button) findViewById(R.id.back);
-        ProgressBar1 = (ProgressBar) findViewById(R.id.ProgressBar1);
-        ProgressBar1.setVisibility(View.GONE);
+        progressBar = (ProgressBar) findViewById(R.id.ProgressBar1);
+        progressBar.setVisibility(View.GONE);
         edit_message = (EditText) findViewById(R.id.edit_message);
         edit_message.setGravity(Gravity.CENTER);
 
@@ -278,7 +260,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         });
 
 
-        Buttonsend.setOnClickListener(new OnClickListener() {
+        buttonSend.setOnClickListener(new OnClickListener() {
                                           @Override
                                           public void onClick(View view) {
 
@@ -287,277 +269,19 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                               String check = edit_message.getText().toString();
                                               phonenumber = check;
                                               if (check.length() < 12) {
-                                                  Toast toast = Toast.makeText(CheckinActivity.this, "Invalid Phone Number", Toast.LENGTH_LONG);
-                                                  toast.setGravity(Gravity.CENTER, 0, 0);
-                                                  LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                  TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                  toastTV.setTextSize(45);
-                                                  toastTV.setTextColor(Color.WHITE);
-                                                  toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                  toast.show();
+                                                  showToastGeneric("Invalid Phone Number");
+
                                               } else {
-                                                  Buttonsend.setEnabled(false);
-                                                  if(progress!=null)
-                                                  {
+                                                  buttonSend.setEnabled(false);
+                                                  if (progress != null) {
                                                       progress.show();
                                                   }
 
                                                   try {
 
                                                       if (kioskMode) {
-                                                          String checkin = edit_message.getText().toString();
 
-                                                          HttpClient httpclient = new DefaultHttpClient();
-                                                          String httppostURL = "http://nepatextdeals.com/nepa/androidweb/checkin";
-                                                          //String httppostURL = "http://192.168.0.254/nepadeals/androidweb/checkin";
-                                                          HttpPost httppost = new HttpPost(httppostURL);
-                                                          Log.v(TAG, "postURL: " + httppost);
-
-                                                          JSONObject data1 = new JSONObject();
-                                                          data1.put("merchant_id", merchant_id2);
-                                                          data1.put("merchant_location_id", merchant_location_id2);
-                                                          data1.put("business_user_id", user_id2);
-                                                          data1.put("merchant_kiosk_id", merchant_kiosk_id2);
-                                                          data1.put("subscriber_phone", checkin);
-
-                                                          JSONArray jsonArray = new JSONArray();
-                                                          jsonArray.put(data1);
-
-                                                          List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-                                                          nvps.add(new BasicNameValuePair("data", data1.toString()));
-                                                          httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-
-                                                          httppost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
-                                                          HttpResponse response = httpclient.execute(httppost);
-                                                          HttpEntity resEntity = response.getEntity();
-                                                          if (resEntity != null) {
-                                                              String responseStr = EntityUtils.toString(resEntity).trim();
-                                                              Log.v(TAG, "Response: " + responseStr);
-                                                              Log.i("TAG", "" + response.getStatusLine().getStatusCode());
-                                                              //Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
-                                                              //you can add an if statement here and do other actions based on the response
-                                                              {
-                                                                  JSONObject mainObject = new JSONObject(responseStr);
-                                                                  String record = mainObject.getString("record");
-                                                                  if (record.equals("No")) {
-                                                                      String reason = mainObject.getString("reason");
-                                                                      if (reason.equals("1")) {
-                                                                          Toast toast = Toast.makeText(CheckinActivity.this, "Invalid Phone Number", Toast.LENGTH_LONG);
-                                                                          toast.setGravity(Gravity.CENTER, 0, 0);
-                                                                          LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                                          TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                                          toastTV.setTextSize(45);
-                                                                          toastTV.setTextColor(Color.WHITE);
-                                                                          toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                                          toast.show();
-                                                                      } else if (reason.equals("2")) {
-                                                                          Toast toast = Toast.makeText(CheckinActivity.this, "Your Number Is Blacklisted/Inactive", Toast.LENGTH_LONG);
-
-                                                                          LinearLayout layout = (LinearLayout) toast.getView();
-                                                                          if (layout.getChildCount() > 0) {
-                                                                              TextView tv = (TextView) layout.getChildAt(0);
-                                                                              tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-                                                                          }
-
-                                                                          toast.setGravity(Gravity.CENTER, 0, 0);
-                                                                          LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                                          TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                                          toastTV.setTextSize(45);
-                                                                          toastTV.setTextColor(Color.WHITE);
-                                                                          toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                                          toast.show();
-                                                                      } else if (reason.equals("0")) {
-                                                                          Toast toast = Toast.makeText(CheckinActivity.this, "Kiosk Is Not Active", Toast.LENGTH_LONG);
-                                                                          toast.setGravity(Gravity.CENTER, 0, 0);
-                                                                          LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                                          TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                                          toastTV.setTextSize(45);
-                                                                          toastTV.setTextColor(Color.WHITE);
-                                                                          toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                                          toast.show();
-                                                                      } else if (reason.equals("3")) {
-                                                                          String age_limit = mainObject.getString("age_limit");
-                                                                          age = age_limit;
-
-                                                                          AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
-                                                                          alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " + age_limit + " Years Old. Do You Meet The Age Requirement?");
-                                                                          alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                                              public void onClick(DialogInterface dialog, int id) {
-
-                                                                                  try {
-
-
-                                                                                      HttpClient httpclient5 = new DefaultHttpClient();
-                                                                                      String httppostURL5 = "http://nepatextdeals.com/nepa/androidweb/checkinage";
-                                                                                      //String httppostURL5 = "http://192.168.0.254/nepadeals/androidweb/checkinage";
-                                                                                      HttpPost httppost5 = new HttpPost(httppostURL5);
-                                                                                      Log.v(TAG, "postURL: " + httppost5);
-
-                                                                                      JSONObject data5 = new JSONObject();
-                                                                                      data5.put("merchant_id", merchant_id2);
-                                                                                      data5.put("merchant_location_id", merchant_location_id2);
-                                                                                      data5.put("business_user_id", user_id2);
-                                                                                      data5.put("merchant_kiosk_id", merchant_kiosk_id2);
-                                                                                      data5.put("subscriber_phone", phonenumber);
-                                                                                      data5.put("age_limit", age);
-
-                                                                                      JSONArray jsonArray5 = new JSONArray();
-                                                                                      jsonArray5.put(data5);
-
-                                                                                      List<NameValuePair> nvps5 = new ArrayList<NameValuePair>();
-                                                                                      nvps5.add(new BasicNameValuePair("data", data5.toString()));
-                                                                                      httppost5.setEntity(new UrlEncodedFormEntity(nvps5, HTTP.UTF_8));
-
-                                                                                      httppost5.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
-                                                                                      HttpResponse response5 = httpclient5.execute(httppost5);
-                                                                                      HttpEntity resEntity5 = response5.getEntity();
-                                                                                      if (resEntity5 != null) {
-                                                                                          String responseStr5 = EntityUtils.toString(resEntity5).trim();
-                                                                                          Log.v(TAG, "Response: " + responseStr5);
-                                                                                          Log.i("TAG", "" + response5.getStatusLine().getStatusCode());
-                                                                                          //Toast.makeText(CheckinActivity.this,  responseStr5, Toast.LENGTH_LONG).show();
-                                                                                          //you can add an if statement here and do other actions based on the response
-                                                                                          {
-                                                                                              JSONObject mainObject = new JSONObject(responseStr5);
-                                                                                              String record = mainObject.getString("record");
-                                                                                              if (record.equals("Yes")) {
-                                                                                                  String time_over = mainObject.getString("time_over");
-                                                                                                  if (time_over.equals("Yes")) {
-                                                                                                      String checkin_status = mainObject.getString("checkin_status");
-                                                                                                      if (checkin_status.equals("1")) {
-                                                                                                          String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
-                                                                                                          String no_of_checkin = mainObject.getString("no_of_checkin");
-                                                                                                          String free_gift = mainObject.getString("free_gift");
-                                                                                                          String disclaimer_message = mainObject.getString("disclaimer_message");
-
-                                                                                                          SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                                                                                          Editor editor = pref.edit();
-                                                                                                          editor.putString("no_of_checkin", no_of_checkin);
-                                                                                                          editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-                                                                                                          editor.putString("free_gift", free_gift);
-                                                                                                          editor.putString("disclaimer_message", disclaimer_message);
-                                                                                                          editor.apply();
-
-                                                                                                          Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-                                                                                                          startActivity(i);
-                                                                                                          CheckinActivity.this.finish();
-
-                                                                                                      }
-                                                                                                  }
-                                                                                              }
-                                                                                          }
-
-                                                                                      }
-                                                                                      //Toast.makeText(CheckinActivity.this, "Data: " +data5,Toast.LENGTH_LONG).show();
-
-                                                                                  } catch (ClientProtocolException e) {
-                                                                                      e.printStackTrace();
-                                                                                  } catch (IOException e) {
-                                                                                      e.printStackTrace();
-                                                                                  } catch (Throwable t) {
-                                                                                      Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
-                                                                                              Toast.LENGTH_LONG).show();
-                                                                                  }
-                                                                              }
-
-                                                                          });
-                                                                          alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                                                              public void onClick(DialogInterface dialog, int id) {
-
-                                                                                  Intent i = new Intent(CheckinActivity.this, MainActivity.class);
-                                                                                  startActivity(i);
-                                                                                  CheckinActivity.this.finish();
-
-                                                                              }
-                                                                          });
-                                                                          AlertDialog alertDialog = alertDialogBuilder.create();
-                                                                          alertDialog.show();
-                                                                          alertDialog.setCancelable(false);
-                                                                      }
-                                                                  } else if (record.equals("Yes")) {
-                                                                      String time_over = mainObject.getString("time_over");
-                                                                      if (time_over.equals("No")) {
-                                                                          Toast toast = Toast.makeText(CheckinActivity.this, "Next Check-In Time Not Over", Toast.LENGTH_LONG);
-                                                                          toast.setGravity(Gravity.CENTER, 0, 0);
-                                                                          LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                                          TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                                          toastTV.setTextSize(45);
-                                                                          toastTV.setTextColor(Color.WHITE);
-                                                                          toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                                          toast.show();
-                                                                      } else if (time_over.equals("Yes")) {
-                                                                          String checkin_status = mainObject.getString("checkin_status");
-                                                                          if (checkin_status.equals("1")) {
-
-                                                                              String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
-                                                                              String no_of_checkin = mainObject.getString("no_of_checkin");
-                                                                              String free_gift = mainObject.getString("free_gift");
-                                                                              String disclaimer_message = mainObject.getString("disclaimer_message");
-
-                                                                              SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                                                              Editor editor = pref.edit();
-                                                                              editor.putString("no_of_checkin", no_of_checkin);
-                                                                              editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-                                                                              editor.putString("free_gift", free_gift);
-                                                                              editor.putString("disclaimer_message", disclaimer_message);
-                                                                              editor.apply();
-                                                                              //editor.commit();
-
-                        	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
-                                                toast.setGravity(Gravity.CENTER, 0, 0);
-            				            		LinearLayout toastLayout = (LinearLayout) toast.getView();
-            				            		TextView toastTV = (TextView) toastLayout.getChildAt(0);
-            				            		toastTV.setTextSize(45);
-            				            		toastTV.setTextColor(Color.WHITE);
-            				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
-            				            		toast.show(); */
-                                                                              //MediaPlayer mp;
-                                                                              MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-                                                                              mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                                                                  @Override
-                                                                                  public void onCompletion(MediaPlayer mp) {
-                                                                                      // TODO Auto-generated method stub
-                                                                                      mp.reset();
-                                                                                      mp.release();
-                                                                                      mp = null;
-                                                                                  }
-
-                                                                              });
-                                                                              mp.start();//sound.playShortResource(R.raw.ping);
-
-
-                                                                              Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-                                                                              startActivity(i);
-                                                                              CheckinActivity.this.finish();
-
-                                                                          } else if (checkin_status.equals("2")) {
-                                                                              MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-                                                                              mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                                                                  @Override
-                                                                                  public void onCompletion(MediaPlayer mp) {
-                                                                                      // TODO Auto-generated method stub
-                                                                                      mp.reset();
-                                                                                      mp.release();
-                                                                                      mp = null;
-                                                                                  }
-
-                                                                              });
-                                                                              mp.start();
-
-                                                                              Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
-                                                                              startActivity(i);
-                                                                              CheckinActivity.this.finish();
-
-                                                                          }
-                                                                      }
-                                                                  }
-                                                              }
-                                                          }
-                                                          edit_message.setText("");
-                                                          //Toast.makeText(getBaseContext(),"Sent",Toast.LENGTH_SHORT).show();
-                                                          //Toast.makeText(CheckinActivity.this, "Data: " +data1,Toast.LENGTH_LONG).show();
+                                                          new CallWebservice().execute();
                                                       } else {
                                                           String checkin = edit_message.getText().toString();
 
@@ -595,15 +319,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                                               String record = mainObject.getString("record");
                                                               if (record.equals("exist")) {
 
-                                                                  Toast toast = Toast.makeText(CheckinActivity.this, "You Are Already Subscribed", Toast.LENGTH_LONG);
-                                                                  toast.setGravity(Gravity.CENTER, 0, 0);
-                                                                  LinearLayout toastLayout = (LinearLayout) toast.getView();
-                                                                  TextView toastTV = (TextView) toastLayout.getChildAt(0);
-                                                                  toastTV.setTextSize(45);
-                                                                  toastTV.setGravity(Gravity.CENTER);
-                                                                  toastTV.setTextColor(Color.WHITE);
-                                                                  toast.getView().setBackgroundResource(R.drawable.customtoast);
-                                                                  toast.show();
+                                                                  showToastGeneric("You Are Already Subscribed");
+
 
                                                               } else if (record.equals("new")) {
 
@@ -661,9 +378,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                                               Toast.LENGTH_LONG).show();
                                                   }
 
-                                                  Buttonsend.setEnabled(true);
-                                                  if(progress!=null)
-                                                  {
+                                                  buttonSend.setEnabled(true);
+                                                  if (progress != null) {
                                                       progress.hide();
 
                                                   }
@@ -795,13 +511,10 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                 {
                                     public void onClick(View view) {
 
-                                        if(kioskMode)
-                                        {
+                                        if (kioskMode) {
                                             Intent i = new Intent(CheckinActivity.this, MainScreenActivity.class);
                                             startActivity(i);
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             Intent i = new Intent(CheckinActivity.this, MainActivity.class);
                                             startActivity(i);
                                         }
@@ -852,6 +565,315 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         super.onDestroy();
         //sound.release();
     }
+
+    public void showToastGeneric(String message) {
+        Toast toast = Toast.makeText(CheckinActivity.this, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        LinearLayout toastLayout = (LinearLayout) toast.getView();
+        TextView toastTV = (TextView) toastLayout.getChildAt(0);
+        toastTV.setTextSize(45);
+        toastTV.setGravity(Gravity.CENTER);
+        toastTV.setTextColor(Color.WHITE);
+        toast.getView().setBackgroundResource(R.drawable.customtoast);
+        toast.show();
+    }
+
+    public String callWebserviceFromAlertDialog() {
+
+        try {
+            HttpClient httpclient5 = new DefaultHttpClient();
+            String httppostURL5 = "http://nepatextdeals.com/nepa/androidweb/checkinage";
+            //String httppostURL5 = "http://192.168.0.254/nepadeals/androidweb/checkinage";
+            HttpPost httppost5 = new HttpPost(httppostURL5);
+            Log.v(TAG, "postURL: " + httppost5);
+
+            JSONObject data5 = new JSONObject();
+            data5.put("merchant_id", merchant_id2);
+            data5.put("merchant_location_id", merchant_location_id2);
+            data5.put("business_user_id", user_id2);
+            data5.put("merchant_kiosk_id", merchant_kiosk_id2);
+            data5.put("subscriber_phone", phonenumber);
+            data5.put("age_limit", age);
+
+            JSONArray jsonArray5 = new JSONArray();
+            jsonArray5.put(data5);
+
+            List<NameValuePair> nvps5 = new ArrayList<NameValuePair>();
+            nvps5.add(new BasicNameValuePair("data", data5.toString()));
+            httppost5.setEntity(new UrlEncodedFormEntity(nvps5, HTTP.UTF_8));
+
+            httppost5.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+            HttpResponse response5 = httpclient5.execute(httppost5);
+            HttpEntity resEntity5 = response5.getEntity();
+            if (resEntity5 != null) {
+                String responseStr5 = EntityUtils.toString(resEntity5).trim();
+                Log.v(TAG, "Response: " + responseStr5);
+                Log.i("TAG", "" + response5.getStatusLine().getStatusCode());
+                //Toast.makeText(CheckinActivity.this,  responseStr5, Toast.LENGTH_LONG).show();
+                //you can add an if statement here and do other actions based on the response
+                {
+                    JSONObject mainObject = new JSONObject(responseStr5);
+                    String record = mainObject.getString("record");
+                    if (record.equals("Yes")) {
+                        String time_over = mainObject.getString("time_over");
+                        if (time_over.equals("Yes")) {
+                            String checkin_status = mainObject.getString("checkin_status");
+                            if (checkin_status.equals("1")) {
+                                String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
+                                String no_of_checkin = mainObject.getString("no_of_checkin");
+                                String free_gift = mainObject.getString("free_gift");
+                                String disclaimer_message = mainObject.getString("disclaimer_message");
+
+                                SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                                Editor editor = pref.edit();
+                                editor.putString("no_of_checkin", no_of_checkin);
+                                editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
+                                editor.putString("free_gift", free_gift);
+                                editor.putString("disclaimer_message", disclaimer_message);
+                                editor.apply();
+                                return "SUCCESS";
+
+                            }
+                        }
+                    }
+                }
+
+            }
+            //Toast.makeText(CheckinActivity.this, "Data: " +data5,Toast.LENGTH_LONG).show();
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Throwable t) {
+            Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+        return null;
+    }
+
+
+    public String callWebservice() {
+        try {
+            String checkin = edit_message.getText().toString();
+
+            HttpClient httpclient = new DefaultHttpClient();
+            String httppostURL = "http://nepatextdeals.com/nepa/androidweb/checkin";
+            //String httppostURL = "http://192.168.0.254/nepadeals/androidweb/checkin";
+            HttpPost httppost = new HttpPost(httppostURL);
+            Log.v(TAG, "postURL: " + httppost);
+
+            JSONObject data1 = new JSONObject();
+            data1.put("merchant_id", merchant_id2);
+            data1.put("merchant_location_id", merchant_location_id2);
+            data1.put("business_user_id", user_id2);
+            data1.put("merchant_kiosk_id", merchant_kiosk_id2);
+            data1.put("subscriber_phone", checkin);
+
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(data1);
+
+            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+            nvps.add(new BasicNameValuePair("data", data1.toString()));
+            httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+
+            httppost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity resEntity = response.getEntity();
+            if (resEntity != null) {
+                String responseStr = EntityUtils.toString(resEntity).trim();
+                return responseStr;
+            }
+
+            return null;
+
+            //Toast.makeText(getBaseContext(),"Sent",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(CheckinActivity.this, "Data: " +data1,Toast.LENGTH_LONG).show();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+class CallWebservice extends AsyncTask<Void, Void, String> {
+
+
+    public CallWebservice() {
+
+
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected String doInBackground(Void... voids) {
+        return callWebservice();
+    }
+
+    protected void onPostExecute(String response) {
+
+        try {
+
+            if (response != null) {
+                String responseStr = response;
+                Log.v(TAG, "Response: " + responseStr);
+
+                //Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
+                //you can add an if statement here and do other actions based on the response
+                {
+                    JSONObject mainObject = new JSONObject(responseStr);
+                    String record = mainObject.getString("record");
+                    if (record.equals("No")) {
+                        String reason = mainObject.getString("reason");
+                        if (reason.equals("1")) {
+                            showToastGeneric("Invalid Phone Number");
+
+                        } else if (reason.equals("2")) {
+                            showToastGeneric("Your Number Is Blacklisted/Inactive");
+                        } else if (reason.equals("0")) {
+                            showToastGeneric("Kiosk Is Not Active");
+                        } else if (reason.equals("3")) {
+                            String age_limit = mainObject.getString("age_limit");
+                            age = age_limit;
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
+                            alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " + age_limit + " Years Old. Do You Meet The Age Requirement?");
+                            alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    new CallWebserviceFromAlertDialog().execute();
+                                }
+
+                            });
+                            alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    Intent i = new Intent(CheckinActivity.this, MainActivity.class);
+                                    startActivity(i);
+                                    CheckinActivity.this.finish();
+
+                                }
+                            });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                            alertDialog.setCancelable(false);
+                        }
+                    } else if (record.equals("Yes")) {
+                        String time_over = mainObject.getString("time_over");
+                        if (time_over.equals("No")) {
+                            showToastGeneric("Next Check-In Time Not Over");
+
+                        } else if (time_over.equals("Yes")) {
+                            String checkin_status = mainObject.getString("checkin_status");
+                            if (checkin_status.equals("1")) {
+
+                                String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
+                                String no_of_checkin = mainObject.getString("no_of_checkin");
+                                String free_gift = mainObject.getString("free_gift");
+                                String disclaimer_message = mainObject.getString("disclaimer_message");
+
+                                SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                                Editor editor = pref.edit();
+                                editor.putString("no_of_checkin", no_of_checkin);
+                                editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
+                                editor.putString("free_gift", free_gift);
+                                editor.putString("disclaimer_message", disclaimer_message);
+                                editor.apply();
+                                //editor.commit();
+
+                        	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
+                                                toast.setGravity(Gravity.CENTER, 0, 0);
+            				            		LinearLayout toastLayout = (LinearLayout) toast.getView();
+            				            		TextView toastTV = (TextView) toastLayout.getChildAt(0);
+            				            		toastTV.setTextSize(45);
+            				            		toastTV.setTextColor(Color.WHITE);
+            				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
+            				            		toast.show(); */
+                                //MediaPlayer mp;
+                                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // TODO Auto-generated method stub
+                                        mp.reset();
+                                        mp.release();
+                                        mp = null;
+                                    }
+
+                                });
+                                mp.start();//sound.playShortResource(R.raw.ping);
+
+
+                                Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+                                startActivity(i);
+                                CheckinActivity.this.finish();
+
+                            } else if (checkin_status.equals("2")) {
+                                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // TODO Auto-generated method stub
+                                        mp.reset();
+                                        mp.release();
+                                        mp = null;
+                                    }
+
+                                });
+                                mp.start();
+
+                                Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
+                                startActivity(i);
+                                CheckinActivity.this.finish();
+
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }  catch (Exception e) {
+            e.printStackTrace();
+        } catch (Throwable t) {
+            Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+        edit_message.setText("");
+    }
+}
+
+class CallWebserviceFromAlertDialog extends AsyncTask<Void, Void, String> {
+
+
+    public CallWebserviceFromAlertDialog() {
+
+
+    }
+
+    @Override
+    protected String doInBackground(Void... voids) {
+        return callWebserviceFromAlertDialog();
+    }
+
+    protected void onPostExecute(String response) {
+
+        if (response != null) {
+            Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+            startActivity(i);
+            CheckinActivity.this.finish();
+        }
+
+    }
+}
 }
 
 class DownloadImageTask1 extends AsyncTask<String, Void, Bitmap> {
