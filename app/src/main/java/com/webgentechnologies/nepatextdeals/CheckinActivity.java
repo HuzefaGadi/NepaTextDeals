@@ -67,7 +67,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     View senceTouch;
     MyCount timerCount;
     private ProgressBar ProgressBar1;
-    SoundPoolPlayer sound;
+   // SoundPoolPlayer sound;
     SharedPreferences pref;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
@@ -81,7 +81,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_checkin);
         addListenerOnButton();
-        StrictMode.enableDefaults();
+     //   StrictMode.enableDefaults();
         senceTouch = findViewById(R.id.layout_checkin);
         senceTouch.setOnTouchListener(this);
         pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
@@ -96,7 +96,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
 
 
-        sound = new SoundPoolPlayer(this);
+      //  sound = new SoundPoolPlayer(this);
         SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
         String merchant_id1 = pref.getString("merchant_id", null);
         String merchant_location_id1 = pref.getString("merchant_location_id", null);

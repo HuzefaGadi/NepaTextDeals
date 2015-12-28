@@ -20,7 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,7 +33,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.StrictMode;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -363,7 +361,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                 //	RedeemActivity.this.finish();
                 //	}
 
-                else if (connectionDetector.isConnectingToInternet()) {
+                else if (connectionDetector.isConnectedToInternet()) {
                     try {
 
                         String redeem = edit_messageredeem.getText().toString();
