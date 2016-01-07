@@ -1,6 +1,7 @@
 package com.webgentechnologies.nepatextdeals;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +25,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +51,7 @@ import java.util.List;
 public class UrlActivity extends Activity implements OnTouchListener {
 
     private Button buttonUrl, buttonReturn;
-    private ProgressBar progressBar;
+    private ProgressDialog progressBar;
     EditText edit_messageurl;
     private static final String TAG = "UrlActivity.java";
     View senceTouch;
@@ -59,6 +59,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
     String validurl;
     ConnectionDetector connectionDetector;
     Typeface tf;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -118,8 +119,12 @@ public class UrlActivity extends Activity implements OnTouchListener {
         // TODO Auto-generated method stub
         buttonUrl = (Button) findViewById(R.id.buttonurl);
         buttonReturn = (Button) findViewById(R.id.buttonreturn);
-        progressBar = (ProgressBar) findViewById(R.id.ProgressBar1);
-        progressBar.setVisibility(View.INVISIBLE);
+       /* progressBar = (ProgressBar) findViewById(R.id.ProgressBar1);
+        progressBar.setVisibility(View.INVISIBLE);*/
+        progressBar = new ProgressDialog(this);
+        progressBar.setMessage("Please wait..");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
         edit_messageurl = (EditText) findViewById(R.id.edit_messageurl);
         //edit_messageurl.setGravity(Gravity.CENTER);
 
@@ -211,6 +216,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
     class CallWebservice extends AsyncTask<Void, Void, HttpResponse> {
 
         String url;
+
         public CallWebservice(String url) {
 
             this.url = url;
@@ -220,7 +226,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.show();
         }
 
         protected HttpResponse doInBackground(Void... urls) {
@@ -228,12 +234,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
             try {
                 if (connectionDetector.isConnectedToInternet()) {
                     String url1 = url;
-                    validurl = url1;
-                    SharedPreferences pref2 = getApplicationContext().getSharedPreferences("NepaTextDealsPref10", MODE_PRIVATE);
-                    Editor editor2 = pref2.edit();
-                    editor2.putString("validurl", validurl);
-                    editor2.apply();
-
+                    validurl = url;
                     HttpClient httpclient = new DefaultHttpClient();
                     String httppostURL = "http://nepatextdeals.com/nepa/androidweb";
                     HttpPost httppost = new HttpPost(httppostURL);
@@ -296,7 +297,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                         String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
                         if (url.equals("valid")) {
                             if (kiosk.equals("no")) {
-                                progressBar.setVisibility(View.INVISIBLE);
+                                progressBar.cancel();
                                 showToastGeneric("Kiosk Is Not Active");
                             } else if (kiosk.equals("yes")) {
 
@@ -318,20 +319,24 @@ public class UrlActivity extends Activity implements OnTouchListener {
                                 editor.putString("disclaimer_message", disclaimer_message);
                                 editor.putString("button_push_for_checkins", button_push_for_checkins);
                                 editor.apply();
-                                progressBar.setVisibility(View.INVISIBLE);
+                                progressBar.cancel();
                                 showToastGeneric(organization_name);
                                 showToastGeneric("Your Information Has Been Stored");
+                                SharedPreferences pref2 = getApplicationContext().getSharedPreferences("NepaTextDealsPref10", MODE_PRIVATE);
+                                Editor editor2 = pref2.edit();
+                                editor2.putString("validurl", validurl);
+                                editor2.apply();
                                 new DownloadImageTask2().execute(business_logo);
                             }
                         } else if (url.equals("invalid")) {
-                            progressBar.setVisibility(View.INVISIBLE);
+                            progressBar.cancel();
                             showToastGeneric("Invalid URL");
                         }
 
                     } catch (JSONException e) {
 
                         Log.e("JSON Parser", "Error parsing data " + e.toString());
-                        progressBar.setVisibility(View.INVISIBLE);
+                        progressBar.cancel();
                         showToastGeneric("Invalid URL");
 
                     }

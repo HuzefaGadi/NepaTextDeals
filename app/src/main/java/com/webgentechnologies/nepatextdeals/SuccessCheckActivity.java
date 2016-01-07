@@ -4,7 +4,6 @@ package com.webgentechnologies.nepatextdeals;
 
 import java.io.InputStream;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,13 +28,13 @@ import android.widget.TextView;
 
 public class SuccessCheckActivity extends ApplicationActivity implements OnTouchListener {
 	
-private Button Buttonreturn;
+private Button buttonReturn;
 TextView messagesuccesscheckin1, footer;
 View senceTouch;
 MyCount timerCount;
 ImageView imageView2;
 String imagelogo;
-private ProgressBar ProgressBar1;
+private ProgressBar progressBar;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,11 +65,11 @@ private ProgressBar ProgressBar1;
 		if(imagelogo == null){
 			
 		//imageView2 = (ImageView) findViewById(R.id.imageView2);
-		ProgressBar1.setVisibility(View.VISIBLE);
+		progressBar.setVisibility(View.VISIBLE);
 			
 		} else if(imagelogo != null) {
 			
-		ProgressBar1.setVisibility(View.GONE);	
+		progressBar.setVisibility(View.GONE);
 		new DownloadImageTask5((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 			
 		}
@@ -85,19 +84,15 @@ private ProgressBar ProgressBar1;
         txt.setTypeface(tf);
         
         TextView footer = (TextView) findViewById(R.id.footer);
-        Typeface.createFromAsset(getAssets(), fontPath);
         footer.setTypeface(tf);
         
         TextView buttonreturn = (TextView) findViewById(R.id.buttonreturn);
-        Typeface.createFromAsset(getAssets(), fontPath);
         buttonreturn.setTypeface(tf);
         
         TextView txt1 = (TextView) findViewById(R.id.messagesuccesscheckin1);
-        Typeface.createFromAsset(getAssets(), fontPath);
         txt1.setTypeface(tf);
         
         TextView txt2 = (TextView) findViewById(R.id.messagesuccesscheckin2);
-        Typeface.createFromAsset(getAssets(), fontPath);
         txt2.setTypeface(tf);
 		
 	}
@@ -129,25 +124,24 @@ private ProgressBar ProgressBar1;
 
 	private void addListenerOnButton() {
 		// TODO Auto-generated method stub
-		Buttonreturn = (Button) findViewById(R.id.buttonreturn);
-		ProgressBar1 = (ProgressBar)findViewById(R.id.ProgressBar1);
-		ProgressBar1.setVisibility(View.GONE);
+		buttonReturn = (Button) findViewById(R.id.buttonreturn);
+		progressBar = (ProgressBar)findViewById(R.id.ProgressBar1);
+		progressBar.setVisibility(View.GONE);
 		
-		Buttonreturn.setOnClickListener(new OnClickListener() {
-			 
-          
-       			 
-                    @Override
-                    public void onClick(View view) {
-         
-                    	Intent i = new Intent(SuccessCheckActivity.this, MainActivity.class);
-                    	startActivity(i);
-                    	SuccessCheckActivity.this.finish();
-                    	timerCount.cancel();
-        }
-		
-		
-	});
+		buttonReturn.setOnClickListener(new OnClickListener() {
+
+
+			@Override
+			public void onClick(View view) {
+
+				Intent i = new Intent(SuccessCheckActivity.this, MainActivity.class);
+				startActivity(i);
+				SuccessCheckActivity.this.finish();
+				timerCount.cancel();
+			}
+
+
+		});
 	}
 
 	public class MyCount extends CountDownTimer {
