@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/ProgressBar1"
         android:padding="20dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:gravity="center"
         android:weightSum="7">
@@ -57,9 +58,9 @@
         android:id="@+id/buttonreturn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_below="@+id/tableRow1"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+
         android:background="@drawable/custombutton"
         android:paddingBottom="12dp"
         android:paddingRight="6dp"

@@ -50,7 +50,6 @@ public class ApplicationActivity extends Activity {
                 case 2:
                     edit.putInt("ACTIVITY_TO_SHOW", 1);
                     edit.commit();
-
                     startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
                     finish();
                     break;

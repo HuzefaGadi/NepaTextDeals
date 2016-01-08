@@ -13,6 +13,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -46,12 +47,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UrlActivity extends Activity implements OnTouchListener {
 
     private Button buttonUrl, buttonReturn;
-    private ProgressDialog progressBar;
+    private ProgressDialog progressDialog;
     EditText edit_messageurl;
     private static final String TAG = "UrlActivity.java";
     View senceTouch;
@@ -119,12 +121,12 @@ public class UrlActivity extends Activity implements OnTouchListener {
         // TODO Auto-generated method stub
         buttonUrl = (Button) findViewById(R.id.buttonurl);
         buttonReturn = (Button) findViewById(R.id.buttonreturn);
-       /* progressBar = (ProgressBar) findViewById(R.id.ProgressBar1);
-        progressBar.setVisibility(View.INVISIBLE);*/
-        progressBar = new ProgressDialog(this);
-        progressBar.setMessage("Please wait..");
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.setCancelable(false);
+       /* progressDialog = (ProgressBar) findViewById(R.id.ProgressBar1);
+        progressDialog.setVisibility(View.INVISIBLE);*/
+        progressDialog = new ProgressDialog(this,R.style.NewDialog);
+        progressDialog.setMessage("Please wait..");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
         edit_messageurl = (EditText) findViewById(R.id.edit_messageurl);
         //edit_messageurl.setGravity(Gravity.CENTER);
 
@@ -182,6 +184,109 @@ public class UrlActivity extends Activity implements OnTouchListener {
         return false;
     }
 
+    private void CallWebserviceOnPostExecute(HttpResponse result)
+    {
+        try {
+            HttpResponse response = result;
+            HttpEntity resEntity = response.getEntity();
+            if (resEntity != null) {
+                String responseStr = EntityUtils.toString(resEntity).trim();
+                Log.v(TAG, "Response: " + responseStr);
+                Log.i("TAG", "" + response.getStatusLine().getStatusCode());
+
+                try {
+                    JSONObject mainObject = new JSONObject(responseStr);
+                    String url = mainObject.getString("url");
+                    String kiosk = mainObject.getString("kiosk");
+                    String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
+                    String merchant_location_id = mainObject.getString("merchant_location_id");
+                    String user_id = mainObject.getString("user_id");
+                    String no_of_checkin = mainObject.getString("no_of_checkin");
+                    String free_gift = mainObject.getString("free_gift");
+                    String valid_days = mainObject.getString("valid_days");
+                    String checkin_time_limit = mainObject.getString("checkin_time_limit");
+                    String business_logo = mainObject.getString("business_logo");
+                    String coupon_id = mainObject.getString("coupon_id");
+                    String coupon_keyword = mainObject.getString("coupon_keyword");
+                    String merchant_id = mainObject.getString("merchant_id");
+                    String organization_name = mainObject.getString("organization_name");
+                    String status = mainObject.getString("status");
+                    String disclaimer_message = mainObject.getString("disclaimer_message");
+                    String kiosk_mode = mainObject.getString("kiosk_mode");
+                    String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
+                    if (url.equals("valid")) {
+                        if (kiosk.equals("no")) {
+
+                            showToastGeneric("Kiosk Is Not Active");
+                        } else if (kiosk.equals("yes")) {
+
+                            SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                            Editor editor = pref.edit();
+                            editor.putString("merchant_kiosk_id", merchant_kiosk_id);
+                            editor.putString("merchant_location_id", merchant_location_id);
+                            editor.putString("user_id", user_id);
+                            editor.putString("no_of_checkin", no_of_checkin);
+                            editor.putString("free_gift", free_gift);
+                            editor.putString("valid_days", valid_days);
+                            editor.putString("checkin_time_limit", checkin_time_limit);
+                            editor.putString("business_logo", business_logo);
+                            editor.putString("coupon_id", coupon_id);
+                            editor.putString("coupon_keyword", coupon_keyword);
+                            editor.putString("merchant_id", merchant_id);
+                            editor.putString("kiosk_mode", kiosk_mode);
+                            editor.putString("organization_name", organization_name);
+                            editor.putString("status", status);
+                            editor.putString("disclaimer_message", disclaimer_message);
+                            editor.putString("button_push_for_checkins", button_push_for_checkins);
+                            editor.apply();
+
+                            showToastGeneric(organization_name);
+                            showToastGeneric("Your Information Has Been Stored");
+                            SharedPreferences pref2 = getApplicationContext().getSharedPreferences("NepaTextDealsPref10", MODE_PRIVATE);
+                            Editor editor2 = pref2.edit();
+                            editor2.putString("validurl", validurl);
+                            editor2.apply();
+                            new DownloadImageTask2().execute(business_logo);
+                        }
+                    } else if (url.equals("invalid")) {
+
+                        showToastGeneric("Invalid URL");
+                    }
+
+                } catch (JSONException e) {
+
+                    Log.e("JSON Parser", "Error parsing data " + e.toString());
+
+                    showToastGeneric("Invalid URL");
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(UrlActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(UrlActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
+        } catch (Throwable t) {
+            Toast.makeText(UrlActivity.this, "Request failed: " + t.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+
+        edit_messageurl.setText("");
+    }
+
+    public void showToastGeneric(String message) {
+        Toast toast = Toast.makeText(UrlActivity.this, message, Toast.LENGTH_LONG);
+        LinearLayout toastLayout = (LinearLayout) toast.getView();
+        TextView toastTV = (TextView) toastLayout.getChildAt(0);
+        toastTV.setTextSize(40);
+        toastTV.setTextColor(Color.WHITE);
+        toast.getView().setBackgroundResource(R.drawable.customtoast);
+        toast.show();
+    }
+
     class DownloadImageTask2 extends AsyncTask<String, Void, Bitmap> {
 
         public DownloadImageTask2() {
@@ -216,17 +321,17 @@ public class UrlActivity extends Activity implements OnTouchListener {
     class CallWebservice extends AsyncTask<Void, Void, HttpResponse> {
 
         String url;
+        Date date;
 
         public CallWebservice(String url) {
-
             this.url = url;
-
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.show();
+            progressDialog.show();
+            date = new Date();
         }
 
         protected HttpResponse doInBackground(Void... urls) {
@@ -266,107 +371,21 @@ public class UrlActivity extends Activity implements OnTouchListener {
 
         }
 
-        protected void onPostExecute(HttpResponse result) {
+        protected void onPostExecute(final HttpResponse result) {
 
-            try {
-                HttpResponse response = result;
-                HttpEntity resEntity = response.getEntity();
-                if (resEntity != null) {
-                    String responseStr = EntityUtils.toString(resEntity).trim();
-                    Log.v(TAG, "Response: " + responseStr);
-                    Log.i("TAG", "" + response.getStatusLine().getStatusCode());
-
-                    try {
-                        JSONObject mainObject = new JSONObject(responseStr);
-                        String url = mainObject.getString("url");
-                        String kiosk = mainObject.getString("kiosk");
-                        String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
-                        String merchant_location_id = mainObject.getString("merchant_location_id");
-                        String user_id = mainObject.getString("user_id");
-                        String no_of_checkin = mainObject.getString("no_of_checkin");
-                        String free_gift = mainObject.getString("free_gift");
-                        String valid_days = mainObject.getString("valid_days");
-                        String checkin_time_limit = mainObject.getString("checkin_time_limit");
-                        String business_logo = mainObject.getString("business_logo");
-                        String coupon_id = mainObject.getString("coupon_id");
-                        String coupon_keyword = mainObject.getString("coupon_keyword");
-                        String merchant_id = mainObject.getString("merchant_id");
-                        String organization_name = mainObject.getString("organization_name");
-                        String status = mainObject.getString("status");
-                        String disclaimer_message = mainObject.getString("disclaimer_message");
-                        String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
-                        if (url.equals("valid")) {
-                            if (kiosk.equals("no")) {
-                                progressBar.cancel();
-                                showToastGeneric("Kiosk Is Not Active");
-                            } else if (kiosk.equals("yes")) {
-
-                                SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                Editor editor = pref.edit();
-                                editor.putString("merchant_kiosk_id", merchant_kiosk_id);
-                                editor.putString("merchant_location_id", merchant_location_id);
-                                editor.putString("user_id", user_id);
-                                editor.putString("no_of_checkin", no_of_checkin);
-                                editor.putString("free_gift", free_gift);
-                                editor.putString("valid_days", valid_days);
-                                editor.putString("checkin_time_limit", checkin_time_limit);
-                                editor.putString("business_logo", business_logo);
-                                editor.putString("coupon_id", coupon_id);
-                                editor.putString("coupon_keyword", coupon_keyword);
-                                editor.putString("merchant_id", merchant_id);
-                                editor.putString("organization_name", organization_name);
-                                editor.putString("status", status);
-                                editor.putString("disclaimer_message", disclaimer_message);
-                                editor.putString("button_push_for_checkins", button_push_for_checkins);
-                                editor.apply();
-                                progressBar.cancel();
-                                showToastGeneric(organization_name);
-                                showToastGeneric("Your Information Has Been Stored");
-                                SharedPreferences pref2 = getApplicationContext().getSharedPreferences("NepaTextDealsPref10", MODE_PRIVATE);
-                                Editor editor2 = pref2.edit();
-                                editor2.putString("validurl", validurl);
-                                editor2.apply();
-                                new DownloadImageTask2().execute(business_logo);
-                            }
-                        } else if (url.equals("invalid")) {
-                            progressBar.cancel();
-                            showToastGeneric("Invalid URL");
-                        }
-
-                    } catch (JSONException e) {
-
-                        Log.e("JSON Parser", "Error parsing data " + e.toString());
-                        progressBar.cancel();
-                        showToastGeneric("Invalid URL");
-
+            long totalMillis = new Date().getTime() - date.getTime();
+            if (totalMillis > 3 * 1000) {
+                progressDialog.cancel();
+                CallWebserviceOnPostExecute(result);
+            } else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.cancel();
+                        CallWebserviceOnPostExecute(result);
                     }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(UrlActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                        Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(UrlActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                        Toast.LENGTH_LONG).show();
-            } catch (Throwable t) {
-                Toast.makeText(UrlActivity.this, "Request failed: " + t.toString(),
-                        Toast.LENGTH_LONG).show();
+                }, 3000 - totalMillis);
             }
-
-            edit_messageurl.setText("");
-
-        }
-
-
-        public void showToastGeneric(String message) {
-            Toast toast = Toast.makeText(UrlActivity.this, message, Toast.LENGTH_LONG);
-            LinearLayout toastLayout = (LinearLayout) toast.getView();
-            TextView toastTV = (TextView) toastLayout.getChildAt(0);
-            toastTV.setTextSize(40);
-            toastTV.setTextColor(Color.WHITE);
-            toast.getView().setBackgroundResource(R.drawable.customtoast);
-            toast.show();
         }
     }
 }

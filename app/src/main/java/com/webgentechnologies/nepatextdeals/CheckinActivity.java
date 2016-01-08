@@ -15,6 +15,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,6 +53,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CheckinActivity extends ApplicationActivity implements OnTouchListener {
@@ -69,7 +71,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     SharedPreferences pref;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
-    ProgressDialog progress;
+    ProgressDialog progressDialog;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,11 +89,11 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         timerCount.start();
 
 
-        progress = new ProgressDialog(this);
-        progress.setMessage("Please wait..");
-        progress.setTitle("Checking in");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setCancelable(false);
+        progressDialog = new ProgressDialog(this, R.style.NewDialog);
+        progressDialog.setMessage("Please wait..");
+        progressDialog.setTitle("Checking in");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
 
 
         //  sound = new SoundPoolPlayer(this);
@@ -270,16 +272,16 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                               String check = edit_message.getText().toString();
                                               phonenumber = check;
                                               if (check.length() < 12) {
-                                                  showToastGeneric("Invalid Phone Number");
+                                                  showToastGeneric("Enter Your Mobile Phone Number With Area Code First");
 
                                               } else {
                                                   buttonSend.setEnabled(false);
 
                                                   String checkIn = edit_message.getText().toString();
                                                   if (kioskMode) {
-                                                      new CallWebservice("KIOSK_MODE",checkIn).execute();
+                                                      new CallWebservice("KIOSK_MODE", checkIn).execute();
                                                   } else {
-                                                      new CallWebservice("NON_KIOSK_MODE",checkIn).execute();
+                                                      new CallWebservice("NON_KIOSK_MODE", checkIn).execute();
                                                   }
                                               }
                                           }
@@ -551,12 +553,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
 
     public String callWebserviceForNonKioskMode(String checkIn) {
-
-
         try {
-
-
-
             HttpClient httpclient = new DefaultHttpClient();
             String httppostURL = "http://nepatextdeals.com/nepa/androidweb/signup";
             //String httppostURL = "http://192.168.0.254/nepadeals/androidweb/checkin";
@@ -646,9 +643,189 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         }
         return null;
     }
+    public void callWebserviceOnPostExecute(String type,String response)
+    {
+        if (type.equals("KIOSK_MODE")) {
+            try {
+                if (response != null) {
+                    String responseStr = response;
+                    Log.v(TAG, "Response: " + responseStr);
 
+                    //Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
+                    //you can add an if statement here and do other actions based on the response
+                    {
+                        JSONObject mainObject = new JSONObject(responseStr);
+                        String record = mainObject.getString("record");
+                        if (record.equals("No")) {
+                            String reason = mainObject.getString("reason");
+                            if (reason.equals("1")) {
+                                showToastGeneric("Invalid Phone Number");
+
+                            } else if (reason.equals("2")) {
+                                showToastGeneric("Your Number Is Blacklisted/Inactive");
+                            } else if (reason.equals("0")) {
+                                showToastGeneric("Kiosk Is Not Active");
+                            } else if (reason.equals("3")) {
+                                String age_limit = mainObject.getString("age_limit");
+                                age = age_limit;
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
+                                alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " + age_limit + " Years Old. Do You Meet The Age Requirement?");
+                                alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        new CallWebserviceFromAlertDialog().execute();
+                                    }
+
+                                });
+                                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        Intent i = new Intent(CheckinActivity.this, MainActivity.class);
+                                        startActivity(i);
+                                        CheckinActivity.this.finish();
+
+                                    }
+                                });
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+                                alertDialog.show();
+                                alertDialog.setCancelable(false);
+                            }
+                        } else if (record.equals("Yes")) {
+                            String time_over = mainObject.getString("time_over");
+                            if (time_over.equals("No")) {
+                                showToastGeneric("Next Check-In Time Not Over");
+
+                            } else if (time_over.equals("Yes")) {
+                                String checkin_status = mainObject.getString("checkin_status");
+                                if (checkin_status.equals("1")) {
+
+                                    String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
+                                    String no_of_checkin = mainObject.getString("no_of_checkin");
+                                    String free_gift = mainObject.getString("free_gift");
+                                    String disclaimer_message = mainObject.getString("disclaimer_message");
+
+                                    SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                                    Editor editor = pref.edit();
+                                    editor.putString("no_of_checkin", no_of_checkin);
+                                    editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
+                                    editor.putString("free_gift", free_gift);
+                                    editor.putString("disclaimer_message", disclaimer_message);
+                                    editor.apply();
+                                    //editor.commit();
+
+                        	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
+                                                toast.setGravity(Gravity.CENTER, 0, 0);
+            				            		LinearLayout toastLayout = (LinearLayout) toast.getView();
+            				            		TextView toastTV = (TextView) toastLayout.getChildAt(0);
+            				            		toastTV.setTextSize(45);
+            				            		toastTV.setTextColor(Color.WHITE);
+            				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
+            				            		toast.show(); */
+                                    //MediaPlayer mp;
+                                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+                                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                                        @Override
+                                        public void onCompletion(MediaPlayer mp) {
+                                            // TODO Auto-generated method stub
+                                            mp.reset();
+                                            mp.release();
+                                            mp = null;
+                                        }
+
+                                    });
+                                    mp.start();//sound.playShortResource(R.raw.ping);
+
+
+                                    Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+                                    startActivity(i);
+                                    CheckinActivity.this.finish();
+
+                                } else if (checkin_status.equals("2")) {
+                                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+                                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                                        @Override
+                                        public void onCompletion(MediaPlayer mp) {
+                                            // TODO Auto-generated method stub
+                                            mp.reset();
+                                            mp.release();
+                                            mp = null;
+                                        }
+
+                                    });
+                                    mp.start();
+
+                                    Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
+                                    startActivity(i);
+                                    CheckinActivity.this.finish();
+
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            } catch (Throwable t) {
+                Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            if (response != null) {
+                try {
+                    String responseStr = response;
+                    JSONObject mainObject = new JSONObject(responseStr);
+                    String record = mainObject.getString("record");
+                    if (record.equals("exist")) {
+                        showToastGeneric("You Are Already Subscribed");
+                    } else if (record.equals("new")) {
+
+                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
+                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                // TODO Auto-generated method stub
+                                mp.reset();
+                                mp.release();
+                                mp = null;
+                            }
+
+                        });
+                        mp.start();//sound.playShortResource(R.raw.ping);
+
+                        String disclaimer_message = mainObject.getString("disclaimer_message");
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                        Editor editor = pref.edit();
+                        editor.putString("disclaimer_message", disclaimer_message);
+                        editor.apply();
+                        Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
+                        startActivity(i);
+                        CheckinActivity.this.finish();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                            Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
+                            Toast.LENGTH_LONG).show();
+                } catch (Throwable t) {
+                    Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        buttonSend.setEnabled(true);
+        edit_message.setText("");
+    }
     class CallWebservice extends AsyncTask<Void, Void, String> {
 
+        Date date;
         String type;
         String checkIn;
 
@@ -662,7 +839,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         protected void onPreExecute() {
             super.onPreExecute();
             //  progressBar.setVisibility(View.VISIBLE);
-            progress.show();
+            progressDialog.show();
+            date = new Date();
         }
 
         @Override
@@ -676,189 +854,23 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
         }
 
-        protected void onPostExecute(String response) {
-            progress.cancel();
-
-            if (type.equals("KIOSK_MODE")) {
-                try {
-                    if (response != null) {
-                        String responseStr = response;
-                        Log.v(TAG, "Response: " + responseStr);
-
-                        //Toast.makeText(CheckinActivity.this,  responseStr, Toast.LENGTH_LONG).show();
-                        //you can add an if statement here and do other actions based on the response
-                        {
-                            JSONObject mainObject = new JSONObject(responseStr);
-                            String record = mainObject.getString("record");
-                            if (record.equals("No")) {
-                                String reason = mainObject.getString("reason");
-                                if (reason.equals("1")) {
-                                    showToastGeneric("Invalid Phone Number");
-
-                                } else if (reason.equals("2")) {
-                                    showToastGeneric("Your Number Is Blacklisted/Inactive");
-                                } else if (reason.equals("0")) {
-                                    showToastGeneric("Kiosk Is Not Active");
-                                } else if (reason.equals("3")) {
-                                    String age_limit = mainObject.getString("age_limit");
-                                    age = age_limit;
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CheckinActivity.this);
-                                    alertDialogBuilder.setMessage("To Participate With This Business You Must Be At Least " + age_limit + " Years Old. Do You Meet The Age Requirement?");
-                                    alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            new CallWebserviceFromAlertDialog().execute();
-                                        }
-
-                                    });
-                                    alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-
-                                            Intent i = new Intent(CheckinActivity.this, MainActivity.class);
-                                            startActivity(i);
-                                            CheckinActivity.this.finish();
-
-                                        }
-                                    });
-                                    AlertDialog alertDialog = alertDialogBuilder.create();
-                                    alertDialog.show();
-                                    alertDialog.setCancelable(false);
-                                }
-                            } else if (record.equals("Yes")) {
-                                String time_over = mainObject.getString("time_over");
-                                if (time_over.equals("No")) {
-                                    showToastGeneric("Next Check-In Time Not Over");
-
-                                } else if (time_over.equals("Yes")) {
-                                    String checkin_status = mainObject.getString("checkin_status");
-                                    if (checkin_status.equals("1")) {
-
-                                        String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
-                                        String no_of_checkin = mainObject.getString("no_of_checkin");
-                                        String free_gift = mainObject.getString("free_gift");
-                                        String disclaimer_message = mainObject.getString("disclaimer_message");
-
-                                        SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                        Editor editor = pref.edit();
-                                        editor.putString("no_of_checkin", no_of_checkin);
-                                        editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-                                        editor.putString("free_gift", free_gift);
-                                        editor.putString("disclaimer_message", disclaimer_message);
-                                        editor.apply();
-                                        //editor.commit();
-
-                        	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
-                                                toast.setGravity(Gravity.CENTER, 0, 0);
-            				            		LinearLayout toastLayout = (LinearLayout) toast.getView();
-            				            		TextView toastTV = (TextView) toastLayout.getChildAt(0);
-            				            		toastTV.setTextSize(45);
-            				            		toastTV.setTextColor(Color.WHITE);
-            				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
-            				            		toast.show(); */
-                                        //MediaPlayer mp;
-                                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-                                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                            @Override
-                                            public void onCompletion(MediaPlayer mp) {
-                                                // TODO Auto-generated method stub
-                                                mp.reset();
-                                                mp.release();
-                                                mp = null;
-                                            }
-
-                                        });
-                                        mp.start();//sound.playShortResource(R.raw.ping);
-
-
-                                        Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-                                        startActivity(i);
-                                        CheckinActivity.this.finish();
-
-                                    } else if (checkin_status.equals("2")) {
-                                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-                                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                            @Override
-                                            public void onCompletion(MediaPlayer mp) {
-                                                // TODO Auto-generated method stub
-                                                mp.reset();
-                                                mp.release();
-                                                mp = null;
-                                            }
-
-                                        });
-                                        mp.start();
-
-                                        Intent i = new Intent(CheckinActivity.this, SuccessCheckActivity.class);
-                                        startActivity(i);
-                                        CheckinActivity.this.finish();
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (JSONException e) {
-                    Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                            Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                            Toast.LENGTH_LONG).show();
-                } catch (Throwable t) {
-                    Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
-                            Toast.LENGTH_LONG).show();
-                }
-
+        protected void onPostExecute(final String response) {
+            long totalMillis = new Date().getTime() - date.getTime();
+            if (totalMillis > 3 * 1000) {
+                progressDialog.cancel();
+                callWebserviceOnPostExecute(type,response);
             } else {
-                if (response != null) {
-                    try {
-                        String responseStr = response;
-                        JSONObject mainObject = new JSONObject(responseStr);
-                        String record = mainObject.getString("record");
-                        if (record.equals("exist")) {
-                            showToastGeneric("You Are Already Subscribed");
-                        } else if (record.equals("new")) {
-
-                            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
-                            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    // TODO Auto-generated method stub
-                                    mp.reset();
-                                    mp.release();
-                                    mp = null;
-                                }
-
-                            });
-                            mp.start();//sound.playShortResource(R.raw.ping);
-
-                            String disclaimer_message = mainObject.getString("disclaimer_message");
-                            SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                            Editor editor = pref.edit();
-                            editor.putString("disclaimer_message", disclaimer_message);
-                            editor.apply();
-                            Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
-                            startActivity(i);
-                            CheckinActivity.this.finish();
-                        }
-                    } catch (JSONException e) {
-                        Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                                Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
-                        Toast.makeText(CheckinActivity.this, "Request failed: " + e.getLocalizedMessage(),
-                                Toast.LENGTH_LONG).show();
-                    } catch (Throwable t) {
-                        Toast.makeText(CheckinActivity.this, "Request failed: " + t.toString(),
-                                Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.cancel();
+                        callWebserviceOnPostExecute(type, response);
                     }
-                }
+                }, 3000 - totalMillis);
             }
-            buttonSend.setEnabled(true);
-            edit_message.setText("");
+
         }
     }
-
 
     class CallWebserviceFromAlertDialog extends AsyncTask<Void, Void, String> {
 

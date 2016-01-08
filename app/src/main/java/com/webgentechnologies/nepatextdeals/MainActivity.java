@@ -393,9 +393,41 @@ public class MainActivity extends ApplicationActivity {
                             {
                                 try {
                                     JSONObject mainObject = new JSONObject(responseStr);
+                                    String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
+                                    String merchant_location_id = mainObject.getString("merchant_location_id");
+                                    String user_id = mainObject.getString("user_id");
+                                    String no_of_checkin = mainObject.getString("no_of_checkin");
+                                    String free_gift = mainObject.getString("free_gift");
+                                    String valid_days = mainObject.getString("valid_days");
+                                    String checkin_time_limit = mainObject.getString("checkin_time_limit");
+                                    String business_logo = mainObject.getString("business_logo");
+                                    String coupon_id = mainObject.getString("coupon_id");
+                                    String coupon_keyword = mainObject.getString("coupon_keyword");
+                                    String merchant_id = mainObject.getString("merchant_id");
+                                    String organization_name = mainObject.getString("organization_name");
+                                    String status = mainObject.getString("status");
+                                    String disclaimer_message = mainObject.getString("disclaimer_message");
                                     String kiosk_mode = mainObject.getString("kiosk_mode");
+                                    String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
+
+
                                     Editor editor = pref.edit();
+                                    editor.putString("merchant_kiosk_id", merchant_kiosk_id);
+                                    editor.putString("merchant_location_id", merchant_location_id);
+                                    editor.putString("user_id", user_id);
+                                    editor.putString("no_of_checkin", no_of_checkin);
+                                    editor.putString("free_gift", free_gift);
+                                    editor.putString("valid_days", valid_days);
+                                    editor.putString("checkin_time_limit", checkin_time_limit);
+                                    editor.putString("business_logo", business_logo);
+                                    editor.putString("coupon_id", coupon_id);
+                                    editor.putString("coupon_keyword", coupon_keyword);
+                                    editor.putString("merchant_id", merchant_id);
                                     editor.putString("kiosk_mode", kiosk_mode);
+                                    editor.putString("organization_name", organization_name);
+                                    editor.putString("status", status);
+                                    editor.putString("disclaimer_message", disclaimer_message);
+                                    editor.putString("button_push_for_checkins", button_push_for_checkins);
                                     editor.apply();
                                     shouldAllowAhead = true;
                                 } catch (JSONException e) {

@@ -13,6 +13,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -53,6 +54,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RedeemActivity extends ApplicationActivity implements OnTouchListener {
@@ -65,7 +67,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
     String imagelogo;
     View senceTouch;
     MyCount timerCount;
-    private ProgressBar ProgressBar1;
+    private ProgressBar progressBar;
     ProgressDialog progressDialog;
     private static final String TAG = "RedeemActivity.java";
     ConnectionDetector connectionDetector;
@@ -106,11 +108,11 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         if (imagelogo == null) {
 
             //imageView2 = (ImageView) findViewById(R.id.imageView2);
-            ProgressBar1.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
         } else if (imagelogo != null) {
 
-            ProgressBar1.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             new DownloadImageTask((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
@@ -166,7 +168,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         TextView buttonenter = (TextView) findViewById(R.id.buttonenter);
         buttonenter.setTypeface(tf);
 
-        progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this,R.style.NewDialog);
         progressDialog.setMessage("Please wait..");
         progressDialog.setTitle("Redeeming");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -244,8 +246,8 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         clear = (Button) findViewById(R.id.clear);
         b0 = (Button) findViewById(R.id.b0);
         back = (Button) findViewById(R.id.back);
-        ProgressBar1 = (ProgressBar) findViewById(R.id.ProgressBar1);
-        ProgressBar1.setVisibility(View.GONE);
+        progressBar = (ProgressBar) findViewById(R.id.ProgressBar1);
+        progressBar.setVisibility(View.GONE);
         edit_messageredeem = (EditText) findViewById(R.id.edit_messageredeem);
         edit_messageredeem.setGravity(Gravity.CENTER);
         edit_messageredeem.addTextChangedListener(new TextWatcher() {
@@ -473,9 +475,54 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         return false;
     }
 
+    private void CallWebserviceOnPostExecute(String result)
+    {
+        try {
+            String responseStr = result;
+            if (responseStr != null) {
+                JSONObject mainObject = new JSONObject(responseStr);
+                String code_valid = mainObject.getString("code_valid");
+                buttonEnter.setEnabled(true);
+                if (code_valid.equals("Yes")) {
+                    String free_gift = mainObject.getString("free_gift_for_redeem");
+                    String coupon_code_description = mainObject.getString("coupon_code_description");
+                    Intent i = new Intent(RedeemActivity.this, SuccessRedeemActivity.class);
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+                    pref.edit().putString("free_gift_for_redeem", free_gift).commit();
+                    pref.edit().putString("coupon_code_description", coupon_code_description).commit();
+                    startActivity(i);
+                    RedeemActivity.this.finish();
+                } else if (code_valid.equals("No")) {
+                    String status = mainObject.getString("status");
+                    if (status.equals("1")) {
+                        showToastGeneric("Invalid Coupon Code");
+                    } else if (status.equals("2")) {
+                        showToastGeneric("This Reward Code Has Already Been Redeemed");
+                    } else if (status.equals("3")) {
+                        showToastGeneric("Redemption Time Over");
+
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            Log.e("JSON Parser", "Error parsing data " + e.toString());
+            Toast.makeText(RedeemActivity.this, "Invalid Coupon Code", Toast.LENGTH_LONG).show();
+            buttonEnter.setEnabled(true);
+        } catch (Exception e) {
+            Toast.makeText(RedeemActivity.this, "Request failed: " + e.toString(),
+                    Toast.LENGTH_LONG).show();
+
+        } catch (Throwable t) {
+            Toast.makeText(RedeemActivity.this, "Request failed: " + t.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+        edit_messageredeem.setText("");
+        buttonEnter.setEnabled(true);
+    }
 
     class CallWebService extends AsyncTask<Void, Void, String> {
         String redeem;
+        Date date;
 
         public CallWebService(String redeem) {
             this.redeem = redeem;
@@ -484,6 +531,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         @Override
         protected void onPreExecute() {
             progressDialog.show();
+            date= new Date();
         }
 
         protected String doInBackground(Void... urls) {
@@ -536,49 +584,21 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         }
 
 
-        protected void onPostExecute(String result) {
-            progressDialog.cancel();
-            try {
-                String responseStr = result;
-                if (responseStr != null) {
-                    JSONObject mainObject = new JSONObject(responseStr);
-                    String code_valid = mainObject.getString("code_valid");
-                    buttonEnter.setEnabled(true);
-                    if (code_valid.equals("Yes")) {
-                        String free_gift = mainObject.getString("free_gift_for_redeem");
-                        String coupon_code_description = mainObject.getString("coupon_code_description");
-                        Intent i = new Intent(RedeemActivity.this, SuccessRedeemActivity.class);
-                        SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-                        pref.edit().putString("free_gift_for_redeem", free_gift).commit();
-                        pref.edit().putString("coupon_code_description", coupon_code_description).commit();
-                        startActivity(i);
-                        RedeemActivity.this.finish();
-                    } else if (code_valid.equals("No")) {
-                        String status = mainObject.getString("status");
-                        if (status.equals("1")) {
-                            showToastGeneric("Invalid Coupon Code");
-                        } else if (status.equals("2")) {
-                            showToastGeneric("This Reward Code Has Already Been Redeemed");
-                        } else if (status.equals("3")) {
-                            showToastGeneric("Redemption Time Over");
-
-                        }
+        protected void onPostExecute(final String result) {
+            long totalMillis = new Date().getTime() - date.getTime();
+            if (totalMillis > 3 * 1000) {
+                progressDialog.cancel();
+                CallWebserviceOnPostExecute(result);
+            } else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.cancel();
+                        CallWebserviceOnPostExecute(result);
                     }
-                }
-            } catch (JSONException e) {
-                Log.e("JSON Parser", "Error parsing data " + e.toString());
-                Toast.makeText(RedeemActivity.this, "Invalid Coupon Code", Toast.LENGTH_LONG).show();
-                buttonEnter.setEnabled(true);
-            } catch (Exception e) {
-                Toast.makeText(RedeemActivity.this, "Request failed: " + e.toString(),
-                        Toast.LENGTH_LONG).show();
-
-            } catch (Throwable t) {
-                Toast.makeText(RedeemActivity.this, "Request failed: " + t.toString(),
-                        Toast.LENGTH_LONG).show();
+                }, 3000 - totalMillis);
             }
-            edit_messageredeem.setText("");
-            buttonEnter.setEnabled(true);
+
         }
     }
 
