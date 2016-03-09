@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -27,8 +31,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.InputStream;
 
 public class MainScreenActivity extends ApplicationActivity implements OnTouchListener {
 
@@ -43,6 +50,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     boolean allowed = false;
     int push_button = 2;
     SharedPreferences preferences;
+    RelativeLayout relativeLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +74,14 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         addListenerOnButton();
         senceTouch = findViewById(R.id.layout_mainscreen);
         senceTouch.setOnTouchListener(this);
+        pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_mainscreen);
+        String business_background_img = pref.getString("business_background_img", null);
+
+        if(business_background_img!=null)
+        {
+            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        }
         SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
         String free_gift1 = pref.getString("free_gift", null);
         String no_of_checkin1 = pref.getString("no_of_checkin", null);
@@ -289,6 +305,53 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         //timerCount.start();
 
         return false;
+    }
+
+
+    class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+        RelativeLayout relativeLayout;
+        Context context;
+        boolean forceUpdate;
+
+        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+            this.relativeLayout = relativeLayout;
+            this.context = context;
+            this.forceUpdate = forceUpdate;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            if (GlobalClass.background != null && !forceUpdate) {
+                return GlobalClass.background;
+            }
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return mIcon11;
+
+
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            if(Build.VERSION.SDK_INT >=16)
+            {
+                relativeLayout.setBackground(drawable);
+            }
+            else
+            {
+                relativeLayout.setBackgroundDrawable(drawable);
+            }
+
+            GlobalClass.background = result;
+        }
     }
 
 

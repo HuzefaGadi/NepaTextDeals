@@ -11,8 +11,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -32,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +76,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
     ProgressDialog progressDialog;
+    RelativeLayout relativeLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +90,13 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         senceTouch = findViewById(R.id.layout_checkin);
         senceTouch.setOnTouchListener(this);
         pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_checkin);
+        String business_background_img = pref.getString("business_background_img", null);
+
+        if(business_background_img!=null)
+        {
+            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        }
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
 
@@ -945,4 +957,52 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
 
     }
+
+    class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+        RelativeLayout relativeLayout;
+        Context context;
+        boolean forceUpdate;
+
+        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+            this.relativeLayout = relativeLayout;
+            this.context = context;
+            this.forceUpdate = forceUpdate;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            if (GlobalClass.background != null && !forceUpdate) {
+                return GlobalClass.background;
+            }
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return mIcon11;
+
+
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            if(Build.VERSION.SDK_INT >=16)
+            {
+                relativeLayout.setBackground(drawable);
+            }
+            else
+            {
+                relativeLayout.setBackgroundDrawable(drawable);
+            }
+
+            GlobalClass.background = result;
+        }
+    }
+
+
 }

@@ -9,5 +9,6 @@ public class GlobalClass {
 
 
     public static Bitmap logo = null;
+    public static Bitmap background = null;
 
 }

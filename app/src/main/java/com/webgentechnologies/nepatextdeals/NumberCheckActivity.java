@@ -9,7 +9,10 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.StrictMode;
@@ -25,130 +28,132 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
- 
-public class NumberCheckActivity extends ApplicationActivity implements OnTouchListener {
-	
-	private Button Buttonreturn;
-	TextView messagenumbercheckin1, messagenumbercheckin11, messagenumbercheckin2, footer;
-	View senceTouch;
-	MyCount timerCount;
-	ImageView imageView2;
-	String imagelogo;
-	private ProgressBar ProgressBar1;
-	boolean kioskMode;
-	
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		setContentView(R.layout.activity_numbercheckin);
-		addListenerOnButton();
-		StrictMode.enableDefaults();
-		senceTouch = findViewById(R.id.layout_numbercheckin); 
-	    senceTouch.setOnTouchListener(this);
-	    timerCount = new MyCount(20 * 1000, 1000);
-	    timerCount.start();
-		
-		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String no_of_checkin1 = pref.getString("no_of_checkin", null);
-		String subscriber_no_of_checkin1 = pref.getString("subscriber_no_of_checkin", null);
-		String business_logo1 = pref.getString("business_logo", null);
 
-		String kioskModeString = pref.getString("kiosk_mode", "1");
-		if (kioskModeString.equals("2")) {
-			kioskMode = false;
-		} else {
-			kioskMode = true;
-		}
+public class NumberCheckActivity extends ApplicationActivity implements OnTouchListener {
+
+    private Button Buttonreturn;
+    TextView messagenumbercheckin1, messagenumbercheckin11, messagenumbercheckin2, footer;
+    View senceTouch;
+    MyCount timerCount;
+    ImageView imageView2;
+    String imagelogo;
+    private ProgressBar ProgressBar1;
+    boolean kioskMode;
+    RelativeLayout relativeLayout;
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        setContentView(R.layout.activity_numbercheckin);
+        addListenerOnButton();
+        StrictMode.enableDefaults();
+        senceTouch = findViewById(R.id.layout_numbercheckin);
+        senceTouch.setOnTouchListener(this);
+        timerCount = new MyCount(20 * 1000, 1000);
+        timerCount.start();
+
+        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_numbercheckin);
+        String business_background_img = pref.getString("business_background_img", null);
+
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
+        }
+        String no_of_checkin1 = pref.getString("no_of_checkin", null);
+        String subscriber_no_of_checkin1 = pref.getString("subscriber_no_of_checkin", null);
+        String business_logo1 = pref.getString("business_logo", null);
+
+        String kioskModeString = pref.getString("kiosk_mode", "1");
+        if (kioskModeString.equals("2")) {
+            kioskMode = false;
+        } else {
+            kioskMode = true;
+        }
 
         imagelogo = business_logo1;
-		
-		if(imagelogo == null){
-		
-		//imageView2 = (ImageView) findViewById(R.id.imageView2);
-		ProgressBar1.setVisibility(View.VISIBLE);
-		
-		} else if(imagelogo != null) {
-		
-		ProgressBar1.setVisibility(View.GONE);
-		new DownloadImageTask4((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
-		
-		}
-		SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		if(kioskMode)
-		{
-			int myNum = 0;
 
-			try {
-				myNum = Integer.parseInt(no_of_checkin1);
-			} catch(NumberFormatException nfe) {
-				// Handle parse error.
-			}
+        if (imagelogo == null) {
 
-			int myNum2 = 0;
+            //imageView2 = (ImageView) findViewById(R.id.imageView2);
+            ProgressBar1.setVisibility(View.VISIBLE);
 
-			try {
-				myNum2 = Integer.parseInt(subscriber_no_of_checkin1);
-			} catch(NumberFormatException nfe) {
-				// Handle parse error.
-			}
+        } else if (imagelogo != null) {
 
-			int myNum3 = myNum - myNum2 ;
+            ProgressBar1.setVisibility(View.GONE);
+            new DownloadImageTask4((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
-			messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
-			messagenumbercheckin1.setText("You Have Checked In " +subscriber_no_of_checkin1 + " Times. You Have " +myNum3 +" More Check-Ins Before You Earn Your FREE Reward.");
+        }
+        SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+        if (kioskMode) {
+            int myNum = 0;
 
-			messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
-			messagenumbercheckin11.setText(no_of_checkin1 + " Check-Ins Earn a FREE");
+            try {
+                myNum = Integer.parseInt(no_of_checkin1);
+            } catch (NumberFormatException nfe) {
+                // Handle parse error.
+            }
 
+            int myNum2 = 0;
 
-			String free_gift1 = pref1.getString("free_gift", null);
-			messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
-			messagenumbercheckin2.setText(free_gift1);
-			messagenumbercheckin2.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-			messagenumbercheckin2.setTypeface(null, Typeface.BOLD);
+            try {
+                myNum2 = Integer.parseInt(subscriber_no_of_checkin1);
+            } catch (NumberFormatException nfe) {
+                // Handle parse error.
+            }
 
-		}
-		else
-		{
-			messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
-			messagenumbercheckin11.setText("");
+            int myNum3 = myNum - myNum2;
 
-			messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
-			messagenumbercheckin2.setText("");
+            messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
+            messagenumbercheckin1.setText("You Have Checked In " + subscriber_no_of_checkin1 + " Times. You Have " + myNum3 + " More Check-Ins Before You Earn Your FREE Reward.");
 
-			messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
-			messagenumbercheckin1.setText(R.string.messagenumbercheckin1ForSignUp);
-
-		}
+            messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
+            messagenumbercheckin11.setText(no_of_checkin1 + " Check-Ins Earn a FREE");
 
 
+            String free_gift1 = pref1.getString("free_gift", null);
+            messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
+            messagenumbercheckin2.setText(free_gift1);
+            messagenumbercheckin2.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+            messagenumbercheckin2.setTypeface(null, Typeface.BOLD);
+
+        } else {
+            messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
+            messagenumbercheckin11.setText("");
+
+            messagenumbercheckin2 = (TextView) findViewById(R.id.messagenumbercheckin2);
+            messagenumbercheckin2.setText("");
+
+            messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
+            messagenumbercheckin1.setText(R.string.messagenumbercheckin1ForSignUp);
+
+        }
 
 
+        String disclaimer_message1 = pref1.getString("disclaimer_message", null);
 
-		String disclaimer_message1 = pref1.getString("disclaimer_message", null);
+        footer = (TextView) findViewById(R.id.footer);
+        footer.setText("By Signing Up You Agree To Receive Up To " + disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
 
-		footer = (TextView) findViewById(R.id.footer);
-		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
-		
-		String fontPath = "fonts/helvetica67medium.ttf";
+        String fontPath = "fonts/helvetica67medium.ttf";
         TextView txt = (TextView) findViewById(R.id.messagenumbercheckin);
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
         txt.setTypeface(tf);
 
-		txt.setText(kioskMode ? R.string.messagenumbercheckin : R.string.messagenumbercheckinForSignUp);
-        
+        txt.setText(kioskMode ? R.string.messagenumbercheckin : R.string.messagenumbercheckinForSignUp);
+
         TextView footer = (TextView) findViewById(R.id.footer);
         Typeface.createFromAsset(getAssets(), fontPath);
         footer.setTypeface(tf);
-        
+
         TextView buttonreturn = (TextView) findViewById(R.id.buttonreturn);
         Typeface.createFromAsset(getAssets(), fontPath);
         buttonreturn.setTypeface(tf);
-        
+
         TextView txt1 = (TextView) findViewById(R.id.messagenumbercheckin1);
         Typeface.createFromAsset(getAssets(), fontPath);
         txt1.setTypeface(tf);
@@ -158,125 +163,175 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
         Typeface.createFromAsset(getAssets(), fontPath);
         txt11.setTypeface(tf);
 
-        
+
         TextView txt2 = (TextView) findViewById(R.id.messagenumbercheckin2);
         Typeface.createFromAsset(getAssets(), fontPath);
         txt2.setTypeface(tf);
 
 
+    }
 
-}
-
-	@Override
-	public boolean dispatchKeyEvent(KeyEvent event) {
-	        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
-	                Log.i("", "Dispath event power");
-	                Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-	                sendBroadcast(closeDialog);
-	                return true;
-	        }
-
-	        return super.dispatchKeyEvent(event);
-	}
-	
-	public void onWindowFocusChanged(boolean hasFocus) {
-	    super.onWindowFocusChanged(hasFocus);
-
-	        Log.d("Focus debug", "Focus changed !");
-
-	    if(!hasFocus) {
-	        Log.d("Focus debug", "Lost focus !");
-
-	        Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-	        sendBroadcast(closeDialog);
-	    }
-	}
-
-	
-	
-	private void addListenerOnButton() {
-		// TODO Auto-generated method stub
-        Buttonreturn = (Button) findViewById(R.id.buttonreturn);
-        ProgressBar1 = (ProgressBar)findViewById(R.id.ProgressBar1);
-		ProgressBar1.setVisibility(View.GONE);
-		
-		Buttonreturn.setOnClickListener(new OnClickListener() {
-       			 
-                    @Override
-                    public void onClick(View view) {
-         
-                    	Intent i = new Intent(NumberCheckActivity.this, MainActivity.class);
-                    	startActivity(i);
-                    	NumberCheckActivity.this.finish();
-                    	timerCount.cancel();
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
+            Log.i("", "Dispath event power");
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+            return true;
         }
-	});
-	}
 
-	
-	public class MyCount extends CountDownTimer {
-	      public MyCount(long millisInFuture, long countDownInterval) {
-	        super(millisInFuture, countDownInterval);
-	      }
+        return super.dispatchKeyEvent(event);
+    }
 
-	      @Override
-	      public void onFinish() {
-	        //some script here
-	        Intent mainIntent = new Intent(NumberCheckActivity.this, MainActivity.class);
-	        NumberCheckActivity.this.startActivity(mainIntent);
-	        NumberCheckActivity.this.finish();
-            
-	      }
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
 
-	      @Override
-	      public void onTick(long millisUntilFinished) {
-	        //some script here 
-	    	  
-	    	  //timerCount.cancel();
-	    	  //timerCount.start();
-	      }   
-	    }
+        Log.d("Focus debug", "Focus changed !");
 
-	
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
-		timerCount.cancel();
-		//timerCount.start();
-		
-		return false;
-	}
+        if (!hasFocus) {
+            Log.d("Focus debug", "Lost focus !");
+
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+        }
+    }
+
+
+    private void addListenerOnButton() {
+        // TODO Auto-generated method stub
+        Buttonreturn = (Button) findViewById(R.id.buttonreturn);
+        ProgressBar1 = (ProgressBar) findViewById(R.id.ProgressBar1);
+        ProgressBar1.setVisibility(View.GONE);
+
+        Buttonreturn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                Intent i = new Intent(NumberCheckActivity.this, MainActivity.class);
+                startActivity(i);
+                NumberCheckActivity.this.finish();
+                timerCount.cancel();
+            }
+        });
+    }
+
+
+    public class MyCount extends CountDownTimer {
+        public MyCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onFinish() {
+            //some script here
+            Intent mainIntent = new Intent(NumberCheckActivity.this, MainActivity.class);
+            NumberCheckActivity.this.startActivity(mainIntent);
+            NumberCheckActivity.this.finish();
+
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            //some script here
+
+            //timerCount.cancel();
+            //timerCount.start();
+        }
+    }
+
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        // TODO Auto-generated method stub
+        timerCount.cancel();
+        //timerCount.start();
+
+        return false;
+    }
+
+    class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+        RelativeLayout relativeLayout;
+        Context context;
+        boolean forceUpdate;
+
+        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+            this.relativeLayout = relativeLayout;
+            this.context = context;
+            this.forceUpdate = forceUpdate;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            if (GlobalClass.background != null && !forceUpdate) {
+                return GlobalClass.background;
+            }
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return mIcon11;
+
+
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            if(Build.VERSION.SDK_INT >=16)
+            {
+                relativeLayout.setBackground(drawable);
+            }
+            else
+            {
+                relativeLayout.setBackgroundDrawable(drawable);
+            }
+
+            GlobalClass.background = result;
+        }
+    }
 }
+
+
 
 class DownloadImageTask4 extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
 
-	public DownloadImageTask4(ImageView bmImage) {
-		this.bmImage = bmImage;
-	}
+    public DownloadImageTask4(ImageView bmImage) {
+        this.bmImage = bmImage;
+    }
 
-	protected Bitmap doInBackground(String... urls) {
+    protected Bitmap doInBackground(String... urls) {
 
-		if (GlobalClass.logo != null) {
-			return GlobalClass.logo;
-		}
-		String urldisplay = urls[0];
-		Bitmap mIcon11 = null;
-		try {
-			InputStream in = new java.net.URL(urldisplay).openStream();
-			mIcon11 = BitmapFactory.decodeStream(in);
-		} catch (Exception e) {
-			Log.e("Error", e.getMessage());
-			e.printStackTrace();
-		}
+        if (GlobalClass.logo != null) {
+            return GlobalClass.logo;
+        }
+        String urldisplay = urls[0];
+        Bitmap mIcon11 = null;
+        try {
+            InputStream in = new java.net.URL(urldisplay).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
 
-		return mIcon11;
+        return mIcon11;
 
 
-	}
-//824516402
-	protected void onPostExecute(Bitmap result) {
-		bmImage.setImageBitmap(result);
-		GlobalClass.logo = result;
-	}
+    }
+
+    //824516402
+    protected void onPostExecute(Bitmap result) {
+        bmImage.setImageBitmap(result);
+        GlobalClass.logo = result;
+    }
+
+
 }
+

@@ -69,6 +69,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_url);
+
         addListenerOnButton();
         senceTouch = findViewById(R.id.layout_url);
         senceTouch.setOnTouchListener(this);
@@ -214,6 +215,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                     String disclaimer_message = mainObject.getString("disclaimer_message");
                     String kiosk_mode = mainObject.getString("kiosk_mode");
                     String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
+                    String business_background_img = mainObject.getString("business_background_img");
                     if (url.equals("valid")) {
                         if (kiosk.equals("no")) {
 
@@ -238,6 +240,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                             editor.putString("status", status);
                             editor.putString("disclaimer_message", disclaimer_message);
                             editor.putString("button_push_for_checkins", button_push_for_checkins);
+                            editor.putString("business_background_img", business_background_img);
                             editor.apply();
 
                             showToastGeneric(organization_name);

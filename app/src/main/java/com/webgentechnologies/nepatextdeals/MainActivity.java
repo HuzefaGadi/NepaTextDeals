@@ -9,7 +9,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -24,6 +27,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +65,7 @@ public class MainActivity extends ApplicationActivity {
     String imagelogo;
     int countOfClicks;
     boolean kioskMode = true;
+    RelativeLayout relativeLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,9 +103,15 @@ public class MainActivity extends ApplicationActivity {
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.activity_main);
         addListenerOnButton();
+        relativeLayout = (RelativeLayout) findViewById(R.id.relative);
+        String business_background_img = pref.getString("business_background_img", null);
+
+        if(business_background_img!=null)
+        {
+            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        }
         String disclaimer_message1 = pref.getString("disclaimer_message", null);
         String business_logo1 = pref.getString("business_logo", null);
-
         imagelogo = business_logo1;
         countOfClicks = 0;
         if (imagelogo == null) {
@@ -114,6 +125,7 @@ public class MainActivity extends ApplicationActivity {
             new DownloadImageTask2((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
+
 
         footer = (TextView) findViewById(R.id.footer);
         footer.setText("By Signing Up You Agree To Receive Up To " + disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
@@ -409,7 +421,15 @@ public class MainActivity extends ApplicationActivity {
                                     String disclaimer_message = mainObject.getString("disclaimer_message");
                                     String kiosk_mode = mainObject.getString("kiosk_mode");
                                     String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
+                                    String business_background_img = mainObject.getString("business_background_img");
 
+                                    String business_background_img_old = pref.getString("business_background_img","");
+
+                                    if(!business_background_img.equals(business_background_img_old))
+                                    {
+                                        if(business_background_img != null && !business_background_img.isEmpty())
+                                        new DownloadBackGroundTask(relativeLayout,this,true).execute(business_background_img);
+                                    }
 
                                     Editor editor = pref.edit();
                                     editor.putString("merchant_kiosk_id", merchant_kiosk_id);
@@ -428,6 +448,7 @@ public class MainActivity extends ApplicationActivity {
                                     editor.putString("status", status);
                                     editor.putString("disclaimer_message", disclaimer_message);
                                     editor.putString("button_push_for_checkins", button_push_for_checkins);
+                                    editor.putString("business_background_img", business_background_img);
                                     editor.apply();
                                     shouldAllowAhead = true;
                                 } catch (JSONException e) {
@@ -482,6 +503,52 @@ class DownloadImageTask2 extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         bmImage.setImageBitmap(result);
         GlobalClass.logo = result;
+    }
+}
+
+class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+    RelativeLayout relativeLayout;
+    Context context;
+    boolean forceUpdate;
+
+    public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+        this.relativeLayout = relativeLayout;
+        this.context = context;
+        this.forceUpdate = forceUpdate;
+    }
+
+    protected Bitmap doInBackground(String... urls) {
+
+        if (GlobalClass.background != null && !forceUpdate) {
+            return GlobalClass.background;
+        }
+        String urldisplay = urls[0];
+        Bitmap mIcon11 = null;
+        try {
+            InputStream in = new java.net.URL(urldisplay).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+
+        return mIcon11;
+
+
+    }
+
+    protected void onPostExecute(Bitmap result) {
+        Drawable drawable = new BitmapDrawable(context.getResources(), result);
+        if(Build.VERSION.SDK_INT >=16)
+        {
+            relativeLayout.setBackground(drawable);
+        }
+        else
+        {
+            relativeLayout.setBackgroundDrawable(drawable);
+        }
+
+        GlobalClass.background = result;
     }
 }
 

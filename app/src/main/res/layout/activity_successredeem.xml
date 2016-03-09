@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backimage"
+    android:id="@+id/layout_successredeem"
     tools:context=".SuccessRedeemActivity" >
 
     <ImageView

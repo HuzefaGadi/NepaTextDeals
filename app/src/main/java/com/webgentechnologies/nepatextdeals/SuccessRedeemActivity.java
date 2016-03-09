@@ -9,8 +9,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
@@ -24,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.InputStream;
@@ -35,6 +39,7 @@ public class SuccessRedeemActivity extends Activity {
     ImageView imageView2;
     String imagelogo;
     private ProgressBar progressBar;
+    RelativeLayout relativeLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +66,12 @@ public class SuccessRedeemActivity extends Activity {
         String coupon_code_description = pref.getString("coupon_code_description", null);
         String disclaimer_message1 = pref.getString("disclaimer_message", null);
         String business_logo1 = pref.getString("business_logo", null);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_successredeem);
+        String business_background_img = pref.getString("business_background_img", null);
 
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
+        }
         imagelogo = business_logo1;
 
         if (imagelogo == null) {
@@ -216,6 +226,49 @@ public class SuccessRedeemActivity extends Activity {
             }
 
         });
+    }
+
+    class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+        RelativeLayout relativeLayout;
+        Context context;
+        boolean forceUpdate;
+
+        public DownloadBackGroundTask(RelativeLayout relativeLayout, Context context, boolean forceUpdate) {
+            this.relativeLayout = relativeLayout;
+            this.context = context;
+            this.forceUpdate = forceUpdate;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            if (GlobalClass.background != null && !forceUpdate) {
+                return GlobalClass.background;
+            }
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return mIcon11;
+
+
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            if (Build.VERSION.SDK_INT >= 16) {
+                relativeLayout.setBackground(drawable);
+            } else {
+                relativeLayout.setBackgroundDrawable(drawable);
+            }
+
+            GlobalClass.background = result;
+        }
     }
 }
 

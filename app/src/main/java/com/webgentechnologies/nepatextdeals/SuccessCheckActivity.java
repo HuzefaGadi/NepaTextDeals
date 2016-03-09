@@ -10,7 +10,10 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -24,6 +27,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class SuccessCheckActivity extends ApplicationActivity implements OnTouchListener {
@@ -35,6 +39,7 @@ MyCount timerCount;
 ImageView imageView2;
 String imagelogo;
 private ProgressBar progressBar;
+	RelativeLayout relativeLayout;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,7 +55,12 @@ private ProgressBar progressBar;
 		
 		SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
 		String disclaimer_message1 = pref1.getString("disclaimer_message", null);
-		
+		relativeLayout = (RelativeLayout) findViewById(R.id.layout_successcheckin);
+		String business_background_img = pref.getString("business_background_img", null);
+
+		if (business_background_img != null) {
+			new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
+		}
 		
 		footer = (TextView) findViewById(R.id.footer);
 		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
@@ -210,20 +220,49 @@ class DownloadImageTask5 extends AsyncTask<String, Void, Bitmap> {
 		bmImage.setImageBitmap(result);
 		GlobalClass.logo = result;
 	}
-   /* protected Bitmap doInBackground(String... urls) {
-        String urldisplay = urls[0];
-        Bitmap mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urldisplay).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
-        }
-        return mIcon11;
-    }
+	class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+		RelativeLayout relativeLayout;
+		Context context;
+		boolean forceUpdate;
 
-    protected void onPostExecute(Bitmap result) {
-        bmImage.setImageBitmap(result);
-    }    */
+		public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+			this.relativeLayout = relativeLayout;
+			this.context = context;
+			this.forceUpdate = forceUpdate;
+		}
+
+		protected Bitmap doInBackground(String... urls) {
+
+			if (GlobalClass.background != null && !forceUpdate) {
+				return GlobalClass.background;
+			}
+			String urldisplay = urls[0];
+			Bitmap mIcon11 = null;
+			try {
+				InputStream in = new java.net.URL(urldisplay).openStream();
+				mIcon11 = BitmapFactory.decodeStream(in);
+			} catch (Exception e) {
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+			}
+
+			return mIcon11;
+
+
+		}
+
+		protected void onPostExecute(Bitmap result) {
+			Drawable drawable = new BitmapDrawable(context.getResources(), result);
+			if(Build.VERSION.SDK_INT >=16)
+			{
+				relativeLayout.setBackground(drawable);
+			}
+			else
+			{
+				relativeLayout.setBackgroundDrawable(drawable);
+			}
+
+			GlobalClass.background = result;
+		}
+	}
 }

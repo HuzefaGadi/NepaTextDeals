@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/backimage"
     android:gravity="top"
+    android:id="@+id/relative"
     tools:context=".MainActivity" >
 
     <ImageView

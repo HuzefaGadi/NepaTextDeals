@@ -10,7 +10,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -33,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,7 +75,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
     ProgressDialog progressDialog;
     private static final String TAG = "RedeemActivity.java";
     ConnectionDetector connectionDetector;
-
+    RelativeLayout relativeLayout;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -80,6 +84,13 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_redeem);
         addListenerOnButton();
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_redeem);
+        String business_background_img = pref.getString("business_background_img", null);
+
+        if(business_background_img!=null)
+        {
+            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        }
         StrictMode.enableDefaults();
         senceTouch = findViewById(R.id.layout_redeem);
         senceTouch.setOnTouchListener(this);
@@ -484,7 +495,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                 String code_valid = mainObject.getString("code_valid");
                 buttonEnter.setEnabled(true);
                 if (code_valid.equals("Yes")) {
-                    String free_gift = mainObject.getString("free_gift_for_redeem");
+                    String free_gift = mainObject.getString("free_gift");
                     String coupon_code_description = mainObject.getString("coupon_code_description");
                     Intent i = new Intent(RedeemActivity.this, SuccessRedeemActivity.class);
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
@@ -506,7 +517,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
             }
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
-            Toast.makeText(RedeemActivity.this, "Invalid Coupon Code", Toast.LENGTH_LONG).show();
+            Toast.makeText(RedeemActivity.this, "Request failed:"+ e.toString(), Toast.LENGTH_LONG).show();
             buttonEnter.setEnabled(true);
         } catch (Exception e) {
             Toast.makeText(RedeemActivity.this, "Request failed: " + e.toString(),
@@ -599,6 +610,52 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                 }, 3000 - totalMillis);
             }
 
+        }
+    }
+
+    class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
+        RelativeLayout relativeLayout;
+        Context context;
+        boolean forceUpdate;
+
+        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+            this.relativeLayout = relativeLayout;
+            this.context = context;
+            this.forceUpdate = forceUpdate;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+
+            if (GlobalClass.background != null && !forceUpdate) {
+                return GlobalClass.background;
+            }
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return mIcon11;
+
+
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            if(Build.VERSION.SDK_INT >=16)
+            {
+                relativeLayout.setBackground(drawable);
+            }
+            else
+            {
+                relativeLayout.setBackgroundDrawable(drawable);
+            }
+
+            GlobalClass.background = result;
         }
     }
 
