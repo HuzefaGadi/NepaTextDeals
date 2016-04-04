@@ -30,6 +30,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 public class SuccessCheckActivity extends ApplicationActivity implements OnTouchListener {
 	
 private Button buttonReturn;
@@ -37,9 +42,10 @@ TextView messagesuccesscheckin1, footer;
 View senceTouch;
 MyCount timerCount;
 ImageView imageView2;
-String imagelogo;
+String imagelogo,disclaimer_message,business_background_img,no_of_checkin,business_logo;
 private ProgressBar progressBar;
 	RelativeLayout relativeLayout;
+	UrlResponse urlResponse;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,24 +59,26 @@ private ProgressBar progressBar;
 	    timerCount = new MyCount(20 * 1000, 1000);
 	    timerCount.start();
 		
-		SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String disclaimer_message1 = pref1.getString("disclaimer_message", null);
+		SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+		urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+		if(urlResponse!=null)
+		{
+			disclaimer_message = urlResponse.getDisclaimer_message();
+			business_background_img = urlResponse.getBusiness_background_img();
+			no_of_checkin = urlResponse.getNo_of_checkin();
+			business_logo = urlResponse.getBusiness_logo();
+		}
 		relativeLayout = (RelativeLayout) findViewById(R.id.layout_successcheckin);
-		String business_background_img = pref.getString("business_background_img", null);
-
 		if (business_background_img != null) {
 			new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
 		}
 		
 		footer = (TextView) findViewById(R.id.footer);
-		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
+		footer.setText("By Signing Up You Agree To Receive Up To " +disclaimer_message + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
+
+
 		
-		
-		SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-		String no_of_checkin1 = pref.getString("no_of_checkin", null);
-		String business_logo1 = pref.getString("business_logo", null);
-		
-		imagelogo = business_logo1;
+		imagelogo = business_logo;
 		
 		if(imagelogo == null){
 			
@@ -85,7 +93,7 @@ private ProgressBar progressBar;
 		}
 		
 		messagesuccesscheckin1 = (TextView) findViewById(R.id.messagesuccesscheckin1);
-		messagesuccesscheckin1.setText("You Have Checked In " +no_of_checkin1 + " Times And Earned Your Reward For Being Our Loyal Customer.");
+		messagesuccesscheckin1.setText("You Have Checked In " +no_of_checkin + " Times And Earned Your Reward For Being Our Loyal Customer.");
 		
 		
 		String fontPath = "fonts/helvetica67medium.ttf";

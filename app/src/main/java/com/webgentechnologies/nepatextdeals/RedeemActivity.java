@@ -40,6 +40,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -76,6 +81,10 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
     private static final String TAG = "RedeemActivity.java";
     ConnectionDetector connectionDetector;
     RelativeLayout relativeLayout;
+    String business_background_img;
+    UrlResponse urlResponse;
+    String merchant_id1, merchant_location_id1, user_id1, merchant_kiosk_id1, business_logo1, disclaimer_message1;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -85,11 +94,20 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         setContentView(R.layout.activity_redeem);
         addListenerOnButton();
         relativeLayout = (RelativeLayout) findViewById(R.id.layout_redeem);
-        String business_background_img = pref.getString("business_background_img", null);
+        SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
+        if (urlResponse != null) {
+            business_background_img = urlResponse.getBusiness_background_img();
+            merchant_id1 = urlResponse.getMerchant_id();
+            merchant_location_id1 = urlResponse.getMerchant_location_id();
+            user_id1 = urlResponse.getUser_id();
+            merchant_kiosk_id1 = urlResponse.getMerchant_kiosk_id();
+            business_logo1 = urlResponse.getBusiness_logo();
+            disclaimer_message1 = urlResponse.getDisclaimer_message();
+        }
 
-        if(business_background_img!=null)
-        {
-            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
         }
         StrictMode.enableDefaults();
         senceTouch = findViewById(R.id.layout_redeem);
@@ -97,13 +115,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
         connectionDetector = new ConnectionDetector(this);
-        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-        String merchant_id1 = pref.getString("merchant_id", null);
-        String merchant_location_id1 = pref.getString("merchant_location_id", null);
-        String user_id1 = pref.getString("user_id", null);
-        String merchant_kiosk_id1 = pref.getString("merchant_kiosk_id", null);
-        String business_logo1 = pref.getString("business_logo", null);
-        String disclaimer_message1 = pref.getString("disclaimer_message", null);
+
 
         footer = (TextView) findViewById(R.id.footer);
         footer.setText("By Signing Up You Agree To Receive Up To " + disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
@@ -179,7 +191,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         TextView buttonenter = (TextView) findViewById(R.id.buttonenter);
         buttonenter.setTypeface(tf);
 
-        progressDialog = new ProgressDialog(this,R.style.NewDialog);
+        progressDialog = new ProgressDialog(this, R.style.NewDialog);
         progressDialog.setMessage("Please wait..");
         progressDialog.setTitle("Redeeming");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -349,8 +361,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                 } else if ((pass.length() < 11) && (!pass.equals("198-3")) && (!pass.equals("111-983-")) && (!pass.equals("999-99"))) {
                     showToastGeneric("Enter Full Coupon Code");
                     buttonEnter.setEnabled(true);
-                }
-                else if (connectionDetector.isConnectedToInternet()) {
+                } else if (connectionDetector.isConnectedToInternet()) {
                     String redeem = edit_messageredeem.getText().toString();
                     new CallWebService(redeem).execute();
                 } else {
@@ -486,8 +497,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         return false;
     }
 
-    private void CallWebserviceOnPostExecute(String result)
-    {
+    private void CallWebserviceOnPostExecute(String result) {
         try {
             String responseStr = result;
             if (responseStr != null) {
@@ -498,9 +508,15 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
                     String free_gift = mainObject.getString("free_gift");
                     String coupon_code_description = mainObject.getString("coupon_code_description");
                     Intent i = new Intent(RedeemActivity.this, SuccessRedeemActivity.class);
-                    SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-                    pref.edit().putString("free_gift_for_redeem", free_gift).commit();
-                    pref.edit().putString("coupon_code_description", coupon_code_description).commit();
+                    UrlResponse urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+                    if(urlResponse!=null)
+                    {
+                        urlResponse.setFree_gift_redeem(free_gift);
+                        urlResponse.setCoupon_code_description(coupon_code_description);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString(Constants.URL_RESPONSE_BEAN,new Gson().toJson(urlResponse));
+                        editor.apply();
+                    }
                     startActivity(i);
                     RedeemActivity.this.finish();
                 } else if (code_valid.equals("No")) {
@@ -517,7 +533,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
             }
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
-            Toast.makeText(RedeemActivity.this, "Request failed:"+ e.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(RedeemActivity.this, "Request failed:" + e.toString(), Toast.LENGTH_LONG).show();
             buttonEnter.setEnabled(true);
         } catch (Exception e) {
             Toast.makeText(RedeemActivity.this, "Request failed: " + e.toString(),
@@ -542,7 +558,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         @Override
         protected void onPreExecute() {
             progressDialog.show();
-            date= new Date();
+            date = new Date();
         }
 
         protected String doInBackground(Void... urls) {
@@ -618,7 +634,7 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
         Context context;
         boolean forceUpdate;
 
-        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+        public DownloadBackGroundTask(RelativeLayout relativeLayout, Context context, boolean forceUpdate) {
             this.relativeLayout = relativeLayout;
             this.context = context;
             this.forceUpdate = forceUpdate;
@@ -646,12 +662,9 @@ public class RedeemActivity extends ApplicationActivity implements OnTouchListen
 
         protected void onPostExecute(Bitmap result) {
             Drawable drawable = new BitmapDrawable(context.getResources(), result);
-            if(Build.VERSION.SDK_INT >=16)
-            {
+            if (Build.VERSION.SDK_INT >= 16) {
                 relativeLayout.setBackground(drawable);
-            }
-            else
-            {
+            } else {
                 relativeLayout.setBackgroundDrawable(drawable);
             }
 

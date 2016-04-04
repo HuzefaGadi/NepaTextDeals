@@ -1,4 +1,4 @@
-package com.webgentechnologies.nepatextdeals;
+package com.webgentechnologies.nepatextdeals.utils;
 
 import android.graphics.Bitmap;
 

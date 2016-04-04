@@ -1,13 +1,16 @@
 package com.webgentechnologies.nepatextdeals;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
 
 /**
  * Created by huzefaasger on 19-08-2015.
@@ -19,6 +22,7 @@ public class ApplicationActivity extends Activity {
     SharedPreferences pref;
     SharedPreferences.Editor edit;
     boolean kioskMode;
+    UrlResponse urlResponse;
 
 
     private Handler disconnectHandler = new Handler(){
@@ -81,9 +85,14 @@ public class ApplicationActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref= this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+        pref= this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
         edit = pref.edit();
-        String kioskModeString = pref.getString("kiosk_mode", "2");
+        String kioskModeString ="2";
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+        if(urlResponse!=null)
+        {
+            kioskModeString = urlResponse.getKiosk_mode();
+        }
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {

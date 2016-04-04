@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -30,6 +29,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -66,6 +70,7 @@ public class MainActivity extends ApplicationActivity {
     int countOfClicks;
     boolean kioskMode = true;
     RelativeLayout relativeLayout;
+    UrlResponse urlResponse;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,19 +109,25 @@ public class MainActivity extends ApplicationActivity {
         setContentView(R.layout.activity_main);
         addListenerOnButton();
         relativeLayout = (RelativeLayout) findViewById(R.id.relative);
-        String business_background_img = pref.getString("business_background_img", null);
-
-        if(business_background_img!=null)
-        {
-            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        String responseString = pref.getString(Constants.URL_RESPONSE_BEAN, "");
+        urlResponse = new Gson().fromJson(responseString, UrlResponse.class);
+        String business_background_img = null;
+        String disclaimer_message1 = null;
+        String business_logo1 = null;
+        String kioskModeString = "";
+        if (urlResponse != null) {
+            business_background_img = urlResponse.getBusiness_background_img();
+            disclaimer_message1 = urlResponse.getDisclaimer_message();
+            business_logo1 = urlResponse.getBusiness_logo();
+            kioskModeString = urlResponse.getKiosk_mode();
         }
-        String disclaimer_message1 = pref.getString("disclaimer_message", null);
-        String business_logo1 = pref.getString("business_logo", null);
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
+        }
+
         imagelogo = business_logo1;
         countOfClicks = 0;
         if (imagelogo == null) {
-
-            //imageView2 = (ImageView) findViewById(R.id.imageView2);
             progressBar.setVisibility(View.VISIBLE);
 
         } else if (imagelogo != null) {
@@ -129,16 +140,14 @@ public class MainActivity extends ApplicationActivity {
 
         footer = (TextView) findViewById(R.id.footer);
         footer.setText("By Signing Up You Agree To Receive Up To " + disclaimer_message1 + " Sent To Your Mobile Phone. Message & Data Rates May Apply. Reply STOP To Stop.");
-
         cd = new ConnectionDetector(getApplicationContext());
-
         SharedPreferences pref2 = this.getSharedPreferences("NepaTextDealsPref10", Context.MODE_PRIVATE);
         String validurl1 = pref2.getString("validurl", null);
         validurl2 = validurl1;
         //Toast.makeText(MainActivity.this, validurl2, Toast.LENGTH_LONG).show();
         new CallWebService("CALL_FOR_EXTRACT_DATA").execute();
         //1 is kiosk mode the normal one else 2 : signup
-        String kioskModeString = pref.getString("kiosk_mode", "1");
+
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {
@@ -295,8 +304,7 @@ public class MainActivity extends ApplicationActivity {
 
         protected void onPostExecute(String response) {
 
-            if(response!=null)
-            {
+            if (response != null) {
                 if (kioskMode) {
                     Intent i = new Intent(MainActivity.this, MainScreenActivity.class);
                     startActivity(i);
@@ -344,17 +352,21 @@ public class MainActivity extends ApplicationActivity {
                         String business_logo = mainObject.getString("business_logo");
                         String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
                         String kiosk_mode = mainObject.getString("kiosk_mode");
-                        SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
                         Editor editor = pref.edit();
-                        editor.putString("no_of_checkin", no_of_checkin);
-                        editor.putString("free_gift", free_gift);
-                        editor.putString("disclaimer_message", disclaimer_message);
-                        editor.putString("business_logo", business_logo);
-                        editor.putString("button_push_for_checkins", button_push_for_checkins);
-                        editor.putString("kiosk_mode", kiosk_mode);
+
+                        UrlResponse urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
+                        if (urlResponse != null) {
+                             urlResponse.setNo_of_checkin(no_of_checkin);
+                            urlResponse.setFree_gift(free_gift);
+                            urlResponse.setDisclaimer_message(disclaimer_message);
+                            urlResponse.setBusiness_logo(business_logo);
+                            urlResponse.setButton_push_for_checkins(button_push_for_checkins);
+                            urlResponse.setKiosk_mode(kiosk_mode);
+                        }
+                        editor.putString(Constants.URL_RESPONSE_BEAN,new Gson().toJson(urlResponse));
                         editor.apply();
                         kioskMode = kiosk_mode.equals("1") ? true : false;
-                        return kioskMode+"";
+                        return kioskMode + "";
                     } catch (JSONException e) {
                         Log.e("JSON Parser", "Error parsing data " + e.toString());
                     }
@@ -404,8 +416,8 @@ public class MainActivity extends ApplicationActivity {
                             Log.i("TAG", "" + response.getStatusLine().getStatusCode());
                             {
                                 try {
-                                    JSONObject mainObject = new JSONObject(responseStr);
-                                    String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
+                                    UrlResponse urlResponseNew = new Gson().fromJson(responseStr, UrlResponse.class);
+                                    /*String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
                                     String merchant_location_id = mainObject.getString("merchant_location_id");
                                     String user_id = mainObject.getString("user_id");
                                     String no_of_checkin = mainObject.getString("no_of_checkin");
@@ -421,18 +433,24 @@ public class MainActivity extends ApplicationActivity {
                                     String disclaimer_message = mainObject.getString("disclaimer_message");
                                     String kiosk_mode = mainObject.getString("kiosk_mode");
                                     String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
-                                    String business_background_img = mainObject.getString("business_background_img");
-
-                                    String business_background_img_old = pref.getString("business_background_img","");
-
-                                    if(!business_background_img.equals(business_background_img_old))
-                                    {
-                                        if(business_background_img != null && !business_background_img.isEmpty())
-                                        new DownloadBackGroundTask(relativeLayout,this,true).execute(business_background_img);
+                                    String business_background_img = mainObject.getString("business_background_img");*/
+                                    SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+                                    urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
+                                    if (urlResponse != null) {
+                                        urlResponseNew.setSubscriber_no_of_checkin(urlResponse.getSubscriber_no_of_checkin());
+                                        urlResponseNew.setCoupon_code_description(urlResponse.getCoupon_code_description());
+                                        urlResponseNew.setFree_gift_redeem(urlResponse.getFree_gift_redeem());
+                                    }
+                                    String business_background_img = urlResponseNew.getBusiness_background_img();
+                                    String business_background_img_old = urlResponse.getBusiness_background_img();
+                                    if (!business_background_img.equals(business_background_img_old)) {
+                                        if (business_background_img != null && !business_background_img.isEmpty())
+                                            new DownloadBackGroundTask(relativeLayout, this, true).execute(business_background_img);
                                     }
 
                                     Editor editor = pref.edit();
-                                    editor.putString("merchant_kiosk_id", merchant_kiosk_id);
+                                    editor.putString(Constants.URL_RESPONSE_BEAN, new Gson().toJson(urlResponseNew));
+                                    /*editor.putString("merchant_kiosk_id", merchant_kiosk_id);
                                     editor.putString("merchant_location_id", merchant_location_id);
                                     editor.putString("user_id", user_id);
                                     editor.putString("no_of_checkin", no_of_checkin);
@@ -448,10 +466,11 @@ public class MainActivity extends ApplicationActivity {
                                     editor.putString("status", status);
                                     editor.putString("disclaimer_message", disclaimer_message);
                                     editor.putString("button_push_for_checkins", button_push_for_checkins);
-                                    editor.putString("business_background_img", business_background_img);
+                                    editor.putString("business_background_img", business_background_img);*/
                                     editor.apply();
+
                                     shouldAllowAhead = true;
-                                } catch (JSONException e) {
+                                } catch (Exception e) {
                                     Log.e("JSON Parser", "Error parsing data " + e.toString());
                                 }
                             }
@@ -511,7 +530,7 @@ class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
     Context context;
     boolean forceUpdate;
 
-    public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+    public DownloadBackGroundTask(RelativeLayout relativeLayout, Context context, boolean forceUpdate) {
         this.relativeLayout = relativeLayout;
         this.context = context;
         this.forceUpdate = forceUpdate;
@@ -539,12 +558,9 @@ class DownloadBackGroundTask extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap result) {
         Drawable drawable = new BitmapDrawable(context.getResources(), result);
-        if(Build.VERSION.SDK_INT >=16)
-        {
+        if (Build.VERSION.SDK_INT >= 16) {
             relativeLayout.setBackground(drawable);
-        }
-        else
-        {
+        } else {
             relativeLayout.setBackgroundDrawable(drawable);
         }
 

@@ -39,6 +39,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -71,12 +76,13 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
     View senceTouch;
     MyCount timerCount;
     private ProgressBar progressBar;
-    // SoundPoolPlayer sound;
-    SharedPreferences pref;//= getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+    UrlResponse urlResponse;
+    SharedPreferences pref;//= getApplicationContext().getSharedPreferences(Constants.PREFERENCE_NAME, MODE_PRIVATE);
     boolean kioskMode = false;
     private static final String TAG = "CheckinActivity.java";
     ProgressDialog progressDialog;
     RelativeLayout relativeLayout;
+    String business_background_img, disclaimer_message1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,13 +95,22 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         //   StrictMode.enableDefaults();
         senceTouch = findViewById(R.id.layout_checkin);
         senceTouch.setOnTouchListener(this);
-        pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+        pref = getSharedPreferences(Constants.PREFERENCE_NAME,MODE_PRIVATE);
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
         relativeLayout = (RelativeLayout) findViewById(R.id.layout_checkin);
-        String business_background_img = pref.getString("business_background_img", null);
-
-        if(business_background_img!=null)
-        {
-            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        String kioskModeString = "1";
+        if (urlResponse != null) {
+            business_background_img = urlResponse.getBusiness_background_img();
+            merchant_id2 = urlResponse.getMerchant_id();
+            merchant_location_id2 = urlResponse.getMerchant_location_id();
+            user_id2 = urlResponse.getUser_id();
+            merchant_kiosk_id2 = urlResponse.getMerchant_kiosk_id();
+            imagelogo = urlResponse.getBusiness_logo();
+            kioskModeString = urlResponse.getKiosk_mode();
+            disclaimer_message1 = urlResponse.getDisclaimer_message();
+        }
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
         }
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
@@ -106,22 +121,14 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         progressDialog.setTitle("Checking in");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
-
-
-        //  sound = new SoundPoolPlayer(this);
-        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-        String merchant_id1 = pref.getString("merchant_id", null);
+       /* String merchant_id1 = pref.getString("merchant_id", null);
         String merchant_location_id1 = pref.getString("merchant_location_id", null);
         String user_id1 = pref.getString("user_id", null);
         String merchant_kiosk_id1 = pref.getString("merchant_kiosk_id", null);
         String disclaimer_message1 = pref.getString("disclaimer_message", null);
-        String business_logo1 = pref.getString("business_logo", null);
+        String business_logo1 = pref.getString("business_logo", null);*/
         //Toast.makeText(getBaseContext(), merchant_id1, Toast.LENGTH_LONG).show();
-        merchant_id2 = merchant_id1;
-        merchant_location_id2 = merchant_location_id1;
-        user_id2 = user_id1;
-        merchant_kiosk_id2 = merchant_kiosk_id1;
-        imagelogo = business_logo1;
+
 
         if (imagelogo == null) {
 
@@ -134,7 +141,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
             new DownloadImageTask1((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
-        String kioskModeString = pref.getString("kiosk_mode", "1");
+
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {
@@ -530,18 +537,25 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                         if (time_over.equals("Yes")) {
                             String checkin_status = mainObject.getString("checkin_status");
                             if (checkin_status.equals("1")) {
+
+
                                 String subscriber_no_of_checkin = mainObject.getString("subscriber_no_of_checkin");
                                 String no_of_checkin = mainObject.getString("no_of_checkin");
                                 String free_gift = mainObject.getString("free_gift");
                                 String disclaimer_message = mainObject.getString("disclaimer_message");
 
-                                SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                Editor editor = pref.edit();
-                                editor.putString("no_of_checkin", no_of_checkin);
-                                editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-                                editor.putString("free_gift", free_gift);
-                                editor.putString("disclaimer_message", disclaimer_message);
-                                editor.apply();
+                                UrlResponse urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+                                if(urlResponse!=null)
+                                {
+                                    urlResponse.setSubscriber_no_of_checkin(subscriber_no_of_checkin);
+                                    urlResponse.setNo_of_checkin(no_of_checkin);
+                                    urlResponse.setFree_gift(free_gift);
+                                    urlResponse.setDisclaimer_message(disclaimer_message);
+                                    Editor editor = pref.edit();
+                                    editor.putString(Constants.URL_RESPONSE_BEAN,new Gson().toJson(urlResponse));
+                                    editor.apply();
+                                }
+
                                 return "SUCCESS";
 
                             }
@@ -655,8 +669,8 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         }
         return null;
     }
-    public void callWebserviceOnPostExecute(String type,String response)
-    {
+
+    public void callWebserviceOnPostExecute(String type, String response) {
         if (type.equals("KIOSK_MODE")) {
             try {
                 if (response != null) {
@@ -715,24 +729,18 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                                     String free_gift = mainObject.getString("free_gift");
                                     String disclaimer_message = mainObject.getString("disclaimer_message");
 
-                                    SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                                    Editor editor = pref.edit();
-                                    editor.putString("no_of_checkin", no_of_checkin);
-                                    editor.putString("subscriber_no_of_checkin", subscriber_no_of_checkin);
-                                    editor.putString("free_gift", free_gift);
-                                    editor.putString("disclaimer_message", disclaimer_message);
-                                    editor.apply();
-                                    //editor.commit();
+                                    UrlResponse urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+                                    if(urlResponse!=null)
+                                    {
+                                        urlResponse.setSubscriber_no_of_checkin(subscriber_no_of_checkin);
+                                        urlResponse.setNo_of_checkin(no_of_checkin);
+                                        urlResponse.setFree_gift(free_gift);
+                                        urlResponse.setDisclaimer_message(disclaimer_message);
+                                        Editor editor = pref.edit();
+                                        editor.putString(Constants.URL_RESPONSE_BEAN,new Gson().toJson(urlResponse));
+                                        editor.apply();
+                                    }
 
-                        	   					/*Toast toast = Toast.makeText(CheckinActivity.this,"You Have Completed " +subscriber_no_of_checkin +" Check-In's Within " +no_of_checkin, Toast.LENGTH_LONG);
-                                                toast.setGravity(Gravity.CENTER, 0, 0);
-            				            		LinearLayout toastLayout = (LinearLayout) toast.getView();
-            				            		TextView toastTV = (TextView) toastLayout.getChildAt(0);
-            				            		toastTV.setTextSize(45);
-            				            		toastTV.setTextColor(Color.WHITE);
-            				            		toast.getView().setBackgroundResource(R.drawable.customtoast);
-            				            		toast.show(); */
-                                    //MediaPlayer mp;
                                     MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ping);
                                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -812,10 +820,15 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                         mp.start();//sound.playShortResource(R.raw.ping);
 
                         String disclaimer_message = mainObject.getString("disclaimer_message");
-                        SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-                        Editor editor = pref.edit();
-                        editor.putString("disclaimer_message", disclaimer_message);
-                        editor.apply();
+                        UrlResponse urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+                        if(urlResponse!=null)
+                        {
+                            urlResponse.setDisclaimer_message(disclaimer_message);
+                            Editor editor = pref.edit();
+                            editor.putString(Constants.URL_RESPONSE_BEAN,new Gson().toJson(urlResponse));
+                            editor.apply();
+                        }
+
                         Intent i = new Intent(CheckinActivity.this, NumberCheckActivity.class);
                         startActivity(i);
                         CheckinActivity.this.finish();
@@ -835,6 +848,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         buttonSend.setEnabled(true);
         edit_message.setText("");
     }
+
     class CallWebservice extends AsyncTask<Void, Void, String> {
 
         Date date;
@@ -870,7 +884,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
             long totalMillis = new Date().getTime() - date.getTime();
             if (totalMillis > 3 * 1000) {
                 progressDialog.cancel();
-                callWebserviceOnPostExecute(type,response);
+                callWebserviceOnPostExecute(type, response);
             } else {
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -963,7 +977,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
         Context context;
         boolean forceUpdate;
 
-        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+        public DownloadBackGroundTask(RelativeLayout relativeLayout, Context context, boolean forceUpdate) {
             this.relativeLayout = relativeLayout;
             this.context = context;
             this.forceUpdate = forceUpdate;
@@ -991,12 +1005,9 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
         protected void onPostExecute(Bitmap result) {
             Drawable drawable = new BitmapDrawable(context.getResources(), result);
-            if(Build.VERSION.SDK_INT >=16)
-            {
+            if (Build.VERSION.SDK_INT >= 16) {
                 relativeLayout.setBackground(drawable);
-            }
-            else
-            {
+            } else {
                 relativeLayout.setBackgroundDrawable(drawable);
             }
 

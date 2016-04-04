@@ -2,7 +2,6 @@ package com.webgentechnologies.nepatextdeals;
 
 import java.io.InputStream;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +30,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 public class NumberCheckActivity extends ApplicationActivity implements OnTouchListener {
 
     private Button Buttonreturn;
@@ -42,6 +46,8 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
     private ProgressBar ProgressBar1;
     boolean kioskMode;
     RelativeLayout relativeLayout;
+    UrlResponse urlResponse;
+    String business_background_img,no_of_checkin,subscriber_no_of_checkin,disclaimer_message,business_logo,kioskModeString;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,25 +63,33 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
 
-        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+        SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN,""),UrlResponse.class);
+        if(urlResponse!=null)
+        {
+            disclaimer_message = urlResponse.getDisclaimer_message();
+            business_background_img = urlResponse.getBusiness_background_img();
+            no_of_checkin = urlResponse.getNo_of_checkin();
+            business_logo = urlResponse.getBusiness_logo();
+            kioskModeString = urlResponse.getKiosk_mode();
+            subscriber_no_of_checkin = urlResponse.getSubscriber_no_of_checkin();
+
+        }
         relativeLayout = (RelativeLayout) findViewById(R.id.layout_numbercheckin);
-        String business_background_img = pref.getString("business_background_img", null);
+
 
         if (business_background_img != null) {
             new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
         }
-        String no_of_checkin1 = pref.getString("no_of_checkin", null);
-        String subscriber_no_of_checkin1 = pref.getString("subscriber_no_of_checkin", null);
-        String business_logo1 = pref.getString("business_logo", null);
 
-        String kioskModeString = pref.getString("kiosk_mode", "1");
+
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {
             kioskMode = true;
         }
 
-        imagelogo = business_logo1;
+        imagelogo = business_logo;
 
         if (imagelogo == null) {
 
@@ -88,12 +102,12 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
             new DownloadImageTask4((ImageView) findViewById(R.id.imageView2)).execute(imagelogo);
 
         }
-        SharedPreferences pref1 = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
+        SharedPreferences pref1 = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
         if (kioskMode) {
             int myNum = 0;
 
             try {
-                myNum = Integer.parseInt(no_of_checkin1);
+                myNum = Integer.parseInt(no_of_checkin);
             } catch (NumberFormatException nfe) {
                 // Handle parse error.
             }
@@ -101,7 +115,7 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
             int myNum2 = 0;
 
             try {
-                myNum2 = Integer.parseInt(subscriber_no_of_checkin1);
+                myNum2 = Integer.parseInt(subscriber_no_of_checkin);
             } catch (NumberFormatException nfe) {
                 // Handle parse error.
             }
@@ -109,10 +123,10 @@ public class NumberCheckActivity extends ApplicationActivity implements OnTouchL
             int myNum3 = myNum - myNum2;
 
             messagenumbercheckin1 = (TextView) findViewById(R.id.messagenumbercheckin1);
-            messagenumbercheckin1.setText("You Have Checked In " + subscriber_no_of_checkin1 + " Times. You Have " + myNum3 + " More Check-Ins Before You Earn Your FREE Reward.");
+            messagenumbercheckin1.setText("You Have Checked In " + subscriber_no_of_checkin+ " Times. You Have " + myNum3 + " More Check-Ins Before You Earn Your FREE Reward.");
 
             messagenumbercheckin11 = (TextView) findViewById(R.id.messagenumbercheckin11);
-            messagenumbercheckin11.setText(no_of_checkin1 + " Check-Ins Earn a FREE");
+            messagenumbercheckin11.setText(no_of_checkin + " Check-Ins Earn a FREE");
 
 
             String free_gift1 = pref1.getString("free_gift", null);

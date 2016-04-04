@@ -29,6 +29,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -196,8 +201,12 @@ public class UrlActivity extends Activity implements OnTouchListener {
                 Log.i("TAG", "" + response.getStatusLine().getStatusCode());
 
                 try {
-                    JSONObject mainObject = new JSONObject(responseStr);
-                    String url = mainObject.getString("url");
+                    UrlResponse urlResponse = new Gson().fromJson(responseStr,UrlResponse.class);
+                    String url = urlResponse.getUrl();
+                    String kiosk = urlResponse.getKiosk();
+                    String business_logo = urlResponse.getBusiness_logo();
+                    String organization_name = urlResponse.getOrganization_name();
+                   /* String url = mainObject.getString("url");
                     String kiosk = mainObject.getString("kiosk");
                     String merchant_kiosk_id = mainObject.getString("merchant_kiosk_id");
                     String merchant_location_id = mainObject.getString("merchant_location_id");
@@ -215,16 +224,17 @@ public class UrlActivity extends Activity implements OnTouchListener {
                     String disclaimer_message = mainObject.getString("disclaimer_message");
                     String kiosk_mode = mainObject.getString("kiosk_mode");
                     String button_push_for_checkins = mainObject.getString("button_push_for_checkins");
-                    String business_background_img = mainObject.getString("business_background_img");
+                    String business_background_img = mainObject.getString("business_background_img");*/
                     if (url.equals("valid")) {
                         if (kiosk.equals("no")) {
 
                             showToastGeneric("Kiosk Is Not Active");
                         } else if (kiosk.equals("yes")) {
 
-                            SharedPreferences pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
+                            SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCE_NAME, MODE_PRIVATE);
                             Editor editor = pref.edit();
-                            editor.putString("merchant_kiosk_id", merchant_kiosk_id);
+                            editor.putString(Constants.URL_RESPONSE_BEAN,responseStr);
+                           /* editor.putString("merchant_kiosk_id", merchant_kiosk_id);
                             editor.putString("merchant_location_id", merchant_location_id);
                             editor.putString("user_id", user_id);
                             editor.putString("no_of_checkin", no_of_checkin);
@@ -240,7 +250,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                             editor.putString("status", status);
                             editor.putString("disclaimer_message", disclaimer_message);
                             editor.putString("button_push_for_checkins", button_push_for_checkins);
-                            editor.putString("business_background_img", business_background_img);
+                            editor.putString("business_background_img", business_background_img);*/
                             editor.apply();
 
                             showToastGeneric(organization_name);
@@ -256,7 +266,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
                         showToastGeneric("Invalid URL");
                     }
 
-                } catch (JSONException e) {
+                } catch (Exception e) {
 
                     Log.e("JSON Parser", "Error parsing data " + e.toString());
 

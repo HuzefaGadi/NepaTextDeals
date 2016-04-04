@@ -2,7 +2,6 @@ package com.webgentechnologies.nepatextdeals;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,6 +24,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,8 +35,16 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
+
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.KioskData;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class MainScreenActivity extends ApplicationActivity implements OnTouchListener {
 
@@ -49,8 +58,12 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     EditText textToProceed;
     boolean allowed = false;
     int push_button = 2;
-    SharedPreferences preferences;
+    UrlResponse urlResponse;
     RelativeLayout relativeLayout;
+    ViewAnimator viewAnimator;
+    Button previous, next;
+    List<KioskData> listOfOffers;
+    Animation slide_in_left, slide_out_right,slide_out_left, slide_in_right;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +71,28 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_mainscreen);
-        String kioskModeString = pref.getString("kiosk_mode", "1");
+        viewAnimator = (ViewAnimator) findViewById(R.id.viewanimator);
+        previous = (Button) findViewById(R.id.prev);
+        next = (Button) findViewById(R.id.next);
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
+        String kioskModeString = "1";
+        String free_gift1 = null;
+        String no_of_checkin1 = null;
+        String disclaimer_message1 = null;
+        String business_logo1 = null;
+        String business_background_img = null;
+        push_button = 2;
+        if (urlResponse != null) {
+            kioskModeString = urlResponse.getKiosk_mode();
+            free_gift1 = urlResponse.getFree_gift();
+            no_of_checkin1 = urlResponse.getNo_of_checkin();
+            disclaimer_message1 = urlResponse.getDisclaimer_message();
+            business_logo1 = urlResponse.getBusiness_logo();
+            business_background_img = urlResponse.getBusiness_background_img();
+            push_button = Integer.parseInt(urlResponse.getButton_push_for_checkins());
+            listOfOffers = urlResponse.getLoyalty_kiosk_data();
+        }
+
         if (kioskModeString.equals("2")) {
             kioskMode = false;
         } else {
@@ -74,20 +108,12 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         addListenerOnButton();
         senceTouch = findViewById(R.id.layout_mainscreen);
         senceTouch.setOnTouchListener(this);
-        pref = getApplicationContext().getSharedPreferences("NepaTextDealsPref", MODE_PRIVATE);
-        relativeLayout = (RelativeLayout) findViewById(R.id.layout_mainscreen);
-        String business_background_img = pref.getString("business_background_img", null);
 
-        if(business_background_img!=null)
-        {
-            new DownloadBackGroundTask(relativeLayout,this,false).execute(business_background_img);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_mainscreen);
+        if (business_background_img != null) {
+            new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
         }
-        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-        String free_gift1 = pref.getString("free_gift", null);
-        String no_of_checkin1 = pref.getString("no_of_checkin", null);
-        String disclaimer_message1 = pref.getString("disclaimer_message", null);
-        String business_logo1 = pref.getString("business_logo", null);
-        push_button = Integer.parseInt(pref.getString("button_push_for_checkins", "2"));
+
         imagelogo = business_logo1;
         timerCount = new MyCount(20 * 1000, 1000);
         timerCount.start();
@@ -155,6 +181,50 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
         TextView checkin = (TextView) findViewById(R.id.checkin);
         checkin.setTypeface(tf);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        if (listOfOffers != null && !listOfOffers.isEmpty()) {
+            for (KioskData offer : listOfOffers) {
+                TextView textView = new TextView(this);
+                textView.setTextSize(50);
+                textView.setTextColor(Color.RED);
+                textView.setText(offer.getFree_gift());
+                textView.setLayoutParams(params);
+                viewAnimator.addView(textView);
+
+            }
+        }
+
+        slide_in_left = AnimationUtils.loadAnimation(this, R.anim.slide_in_left);
+        slide_out_right = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+
+        slide_out_left = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
+        slide_in_right = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+
+
+        viewAnimator.setInAnimation(slide_in_left);
+        viewAnimator.setOutAnimation(slide_out_right);
+
+
+        previous.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                viewAnimator.setInAnimation(slide_in_right);
+                viewAnimator.setOutAnimation(slide_out_left);
+                viewAnimator.showPrevious();
+            }
+        });
+
+        next.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                viewAnimator.setInAnimation(slide_in_left);
+                viewAnimator.setOutAnimation(slide_out_right);
+                viewAnimator.showNext();
+            }
+        });
 
 
     }
@@ -167,16 +237,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         }
 
         protected Bitmap doInBackground(String... urls) {
-        /*String urldisplay = urls[0];
-        Bitmap mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urldisplay).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
-        }
-        return mIcon11;*/
+
             return GlobalClass.logo;
         }
 
@@ -232,7 +293,6 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
                 if (push_button == 2) {
                     allowed = true;
                 }
-
                 if (allowed) {
                     Intent i = new Intent(MainScreenActivity.this, CheckinActivity.class);
                     startActivity(i);
@@ -313,7 +373,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
         Context context;
         boolean forceUpdate;
 
-        public DownloadBackGroundTask(RelativeLayout relativeLayout,Context context,boolean forceUpdate) {
+        public DownloadBackGroundTask(RelativeLayout relativeLayout, Context context, boolean forceUpdate) {
             this.relativeLayout = relativeLayout;
             this.context = context;
             this.forceUpdate = forceUpdate;
@@ -341,12 +401,9 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
         protected void onPostExecute(Bitmap result) {
             Drawable drawable = new BitmapDrawable(context.getResources(), result);
-            if(Build.VERSION.SDK_INT >=16)
-            {
+            if (Build.VERSION.SDK_INT >= 16) {
                 relativeLayout.setBackground(drawable);
-            }
-            else
-            {
+            } else {
                 relativeLayout.setBackgroundDrawable(drawable);
             }
 

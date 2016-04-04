@@ -30,6 +30,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.webgentechnologies.nepatextdeals.beans.UrlResponse;
+import com.webgentechnologies.nepatextdeals.utils.Constants;
+import com.webgentechnologies.nepatextdeals.utils.GlobalClass;
+
 import java.io.InputStream;
 
 public class SuccessRedeemActivity extends Activity {
@@ -40,7 +45,8 @@ public class SuccessRedeemActivity extends Activity {
     String imagelogo;
     private ProgressBar progressBar;
     RelativeLayout relativeLayout;
-
+    UrlResponse urlResponse;
+    String free_gift1,coupon_code_description,disclaimer_message1,business_logo1,business_background_img;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -61,14 +67,18 @@ public class SuccessRedeemActivity extends Activity {
 
         });
         mp.start();
-        SharedPreferences pref = this.getSharedPreferences("NepaTextDealsPref", Context.MODE_PRIVATE);
-        String free_gift1 = pref.getString("free_gift_for_redeem", null);
-        String coupon_code_description = pref.getString("coupon_code_description", null);
-        String disclaimer_message1 = pref.getString("disclaimer_message", null);
-        String business_logo1 = pref.getString("business_logo", null);
-        relativeLayout = (RelativeLayout) findViewById(R.id.layout_successredeem);
-        String business_background_img = pref.getString("business_background_img", null);
+        SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+        urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
+        if (urlResponse != null) {
+            business_background_img = urlResponse.getBusiness_background_img();
+            free_gift1 = urlResponse.getFree_gift_redeem();
+            coupon_code_description = urlResponse.getCoupon_code_description();
+            business_logo1 = urlResponse.getBusiness_logo();
+            disclaimer_message1 = urlResponse.getDisclaimer_message();
+            business_background_img = urlResponse.getBusiness_background_img();
+        }
 
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_successredeem);
         if (business_background_img != null) {
             new DownloadBackGroundTask(relativeLayout, this, false).execute(business_background_img);
         }
