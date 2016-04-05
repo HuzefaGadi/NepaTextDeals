@@ -29,6 +29,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -61,7 +62,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     UrlResponse urlResponse;
     RelativeLayout relativeLayout;
     ViewAnimator viewAnimator;
-    Button previous, next;
+    ImageButton previous, next;
     List<KioskData> listOfOffers;
     Animation slide_in_left, slide_out_right,slide_out_left, slide_in_right;
 
@@ -72,8 +73,8 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_mainscreen);
         viewAnimator = (ViewAnimator) findViewById(R.id.viewanimator);
-        previous = (Button) findViewById(R.id.prev);
-        next = (Button) findViewById(R.id.next);
+        previous = (ImageButton) findViewById(R.id.prev);
+        next = (ImageButton) findViewById(R.id.next);
         urlResponse = new Gson().fromJson(pref.getString(Constants.URL_RESPONSE_BEAN, ""), UrlResponse.class);
         String kioskModeString = "1";
         String free_gift1 = null;
@@ -185,12 +186,13 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
         if (listOfOffers != null && !listOfOffers.isEmpty()) {
             for (KioskData offer : listOfOffers) {
-                TextView textView = new TextView(this);
-                textView.setTextSize(50);
-                textView.setTextColor(Color.RED);
-                textView.setText(offer.getFree_gift());
-                textView.setLayoutParams(params);
-                viewAnimator.addView(textView);
+
+                View ticket = View.inflate(this, R.layout.ticket_layout, null);
+                TextView  offerText = (TextView) ticket.findViewById(R.id.offer);
+                offerText.setText(offer.getFree_gift());
+                TextView  creditText = (TextView) ticket.findViewById(R.id.credits);
+                creditText.setText(offer.getCheckin_credit());
+                viewAnimator.addView(ticket);
 
             }
         }

@@ -166,36 +166,43 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/buttonLayout"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
-        <Button
+        <ImageButton
             android:id="@+id/prev"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-
-            android:text="p" />
+            android:layout_centerInParent="true"
+            android:background="@null"
+            android:src="@drawable/left_arrow" />
 
 
         <ViewAnimator
             android:id="@+id/viewanimator"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/prev"
-            android:layout_toLeftOf="@+id/next" >
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/next"
+            android:layout_toRightOf="@+id/prev">
 
+            <include layout="@layout/ticket_layout" />
 
-            </ViewAnimator>
+        </ViewAnimator>
 
-        <Button
+        <ImageButton
             android:id="@+id/next"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-
+            android:layout_centerInParent="true"
+            android:background="@null"
+            android:src="@drawable/right_arrow"
             android:text="n" />
     </RelativeLayout>
 
