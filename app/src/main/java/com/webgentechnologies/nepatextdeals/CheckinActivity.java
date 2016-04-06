@@ -260,6 +260,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 String str = edit_message.getText().toString();
+
                 if (str.length() == 1) {
                     edit_message.setText("("+str);
 
@@ -268,7 +269,12 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
                 {
                     edit_message.append(")");
                 }
-                if ((str.length() == 7 && len < str.length())) {
+
+                if(str.length() == 5)
+                {
+                    edit_message.append(" ");
+                }
+                if ((str.length() == 9 && len < str.length())) {
                     edit_message.append("-");
 
                 }
@@ -298,7 +304,7 @@ public class CheckinActivity extends ApplicationActivity implements OnTouchListe
 
                                               String check = edit_message.getText().toString();
                                               phonenumber = check;
-                                              if (check.length() < 13) {
+                                              if (check.length() < 14) {
                                                   showToastGeneric("Enter Your Mobile Phone Number With Area Code First");
 
                                               } else {

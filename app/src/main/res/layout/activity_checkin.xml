@@ -213,13 +213,14 @@
          android:ems="7"
          android:imeOptions="actionSend"
          android:inputType="number"
-         android:digits="0123456789-()"
-         android:maxLength="13"
+         android:digits="0123456789-() "
+         android:maxLength="14"
          android:textColor="#ffffff"
          android:textSize="36sp"
          android:background="@drawable/btn"
          android:paddingLeft="10dp"
          android:paddingRight="7dp"
+
          android:cursorVisible="false"
          android:enabled="false" />
      
