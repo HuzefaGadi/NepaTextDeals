@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -49,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -288,6 +290,7 @@ public class UrlActivity extends Activity implements OnTouchListener {
         }
 
         edit_messageurl.setText("");
+        new CallWebserviceForDefaultBackground("").execute();
     }
 
     public void showToastGeneric(String message) {
@@ -399,6 +402,76 @@ public class UrlActivity extends Activity implements OnTouchListener {
                     }
                 }, 3000 - totalMillis);
             }
+        }
+    }
+
+    class CallWebserviceForDefaultBackground extends AsyncTask<Void, Void, HttpResponse> {
+
+        String url;
+        Date date;
+
+        public CallWebserviceForDefaultBackground(String url) {
+            this.url = url;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+            date = new Date();
+        }
+
+        protected HttpResponse doInBackground(Void... urls) {
+
+            try {
+
+
+                if (connectionDetector.isConnectedToInternet()) {
+
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.backimage);
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    icon.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream .toByteArray();
+                    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    String url1 = url;
+                    validurl = url;
+                    HttpClient httpclient = new DefaultHttpClient();
+                    String httppostURL = "http://nepatextdeals.com/nepa/Androidweb/defaultbackimage";
+                    HttpPost httppost = new HttpPost(httppostURL);
+                    Log.v(TAG, "postURL: " + httppost);
+                    JSONObject data1 = new JSONObject();
+                    data1.put("merchant_kiosk_url", url1);
+                    data1.put("default_back_img", encoded);
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.put(data1);
+                    List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                    nvps.add(new BasicNameValuePair("data", data1.toString()));
+                    httppost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+                    httppost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+                    HttpResponse response = httpclient.execute(httppost);
+                    return response;
+                } else {
+                    showToastGeneric("No Internet Connection Avialable");
+                }
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            return null;
+
+
+        }
+
+        protected void onPostExecute(final HttpResponse result) {
+
+            progressDialog.cancel();
+            Toast.makeText(getApplicationContext(),result.getStatusLine()+"",Toast.LENGTH_LONG).show();
         }
     }
 }

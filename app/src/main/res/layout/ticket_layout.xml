@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="50dip"
-    android:layout_marginRight="50dip"
+    android:layout_marginLeft="100dip"
+    android:layout_marginRight="100dip"
     android:orientation="vertical">
 
     <ImageView
@@ -15,29 +15,34 @@
     <TextView
         android:id="@+id/offer"
         android:gravity="center"
-        android:layout_width="200dip"
+        android:layout_width="180dip"
         android:layout_height="wrap_content"
         android:maxLines="2"
         android:text="Large Text hello huzefa"
         android:textColor="#ffffff"
         android:textSize="30dip"
         android:textStyle="bold"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/linearLayout"
-        android:layout_toStartOf="@+id/linearLayout"
-        android:layout_marginRight="62dp"
-        android:layout_marginEnd="62dp" />
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="2"
+        android:shadowColor="#7F000000"
+        android:layout_marginTop="64dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="52dp"
+        android:layout_marginStart="52dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_alignTop="@+id/offer"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="80dp"
-        android:id="@+id/linearLayout">
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentTop="true">
 
         <TextView
             android:id="@+id/credits"
@@ -46,7 +51,11 @@
             android:text="20"
             android:textColor="#ffffff"
             android:textSize="60dip"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:shadowColor="#7F000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="2"/>
 
         <TextView
             android:id="@+id/textView"
@@ -55,7 +64,11 @@
             android:text="Credits"
             android:textColor="#ffffff"
             android:textSize="25dip"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:shadowColor="#7F000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="2"/>
     </LinearLayout>
 
 
