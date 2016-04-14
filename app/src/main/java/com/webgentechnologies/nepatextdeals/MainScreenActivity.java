@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,6 +19,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,7 +66,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
     ViewAnimator viewAnimator;
     ImageButton previous, next;
     List<KioskData> listOfOffers;
-    Animation slide_in_left, slide_out_right,slide_out_left, slide_in_right;
+    Animation slide_in_left, slide_out_right, slide_out_left, slide_in_right;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,20 +184,26 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
         TextView checkin = (TextView) findViewById(R.id.checkin);
         checkin.setTypeface(tf);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         if (listOfOffers != null && !listOfOffers.isEmpty()) {
             for (KioskData offer : listOfOffers) {
 
                 View ticket = View.inflate(this, R.layout.ticket_layout, null);
-                TextView  offerText = (TextView) ticket.findViewById(R.id.offer);
+                ticket.setDrawingCacheEnabled(true);
+                TextView offerText = (TextView) ticket.findViewById(R.id.offer);
                 offerText.setText(offer.getFree_gift());
-                TextView  creditText = (TextView) ticket.findViewById(R.id.credits);
+                TextView creditText = (TextView) ticket.findViewById(R.id.credits);
                 creditText.setText(offer.getCheckin_credit());
+                /*Bitmap imageBitmap = createBitmapFromLayoutWithText(ticket);
+                View ticketImage = View.inflate(this, R.layout.ticket_layout_image, null);
+                ImageView image = (ImageView) ticketImage.findViewById(R.id.imageView);
+                image.setImageBitmap(imageBitmap);*/
                 viewAnimator.addView(ticket);
 
             }
         }
+
 
         slide_in_left = AnimationUtils.loadAnimation(this, R.anim.slide_in_left);
         slide_out_right = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
@@ -231,6 +239,32 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
     }
 
+    /*public Bitmap createBitmapFromLayoutWithText(View view) {
+
+
+        //Provide it with a layout params. It should necessarily be wrapping the
+        //content as we not really going to have a parent for it.
+        view.setLayoutParams(new RelativeLayout.LayoutParams(view.getWidth(),view.getHeight()));
+
+        //Pre-measure the view so that height and width don't remain null.
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        //Assign a size and position to the view and all of its descendants
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        //Create the bitmap
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(),
+                view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        //Create a canvas with the specified bitmap to draw into
+        Canvas c = new Canvas(bitmap);
+
+        //Render this view (and all of its children) to the given Canvas
+        view.draw(c);
+        return bitmap;
+    }
+*/
     class DownloadImageTask3 extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 

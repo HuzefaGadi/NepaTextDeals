@@ -173,7 +173,7 @@
             android:layout_toRightOf="@+id/prev">
 
 
-
+<!--<include layout="@layout/ticket_layout"/>-->
         </ViewAnimator>
 
         <ImageButton
