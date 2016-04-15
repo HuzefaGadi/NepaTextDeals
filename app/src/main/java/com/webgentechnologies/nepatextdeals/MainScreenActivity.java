@@ -220,6 +220,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
             @Override
             public void onClick(View arg0) {
+                timerCount.cancel();
                 viewAnimator.setInAnimation(slide_in_right);
                 viewAnimator.setOutAnimation(slide_out_left);
                 viewAnimator.showPrevious();
@@ -230,6 +231,7 @@ public class MainScreenActivity extends ApplicationActivity implements OnTouchLi
 
             @Override
             public void onClick(View arg0) {
+                timerCount.cancel();
                 viewAnimator.setInAnimation(slide_in_left);
                 viewAnimator.setOutAnimation(slide_out_right);
                 viewAnimator.showNext();
